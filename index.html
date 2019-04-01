@@ -61,6 +61,17 @@
         <div class="modal-body">
           <form action="result.html" onsubmit="validate_form()" class="needs-validation" novalidate>
             <div class="form-row">
+
+                <label for="inputEmail3" class="col-sm-3 col-form-label mt-4">Customer Req</label>
+                <div class="col-sm-9 mt-4 ">
+                <select class="form-control" class="form-control" id="week_type" placeholder="Order/SA Item#" required>
+                <option value="" style="">ship/dock</option>
+                <option value="Ship">Ship</option>
+                <option value="Dock">Dock</option>
+                
+                
+                </select>
+                </div> 
                 <label for="inputEmail3" class="col-sm-3 col-form-label">select week</label>
                 <div class="col-sm-9">
                 <select id="week" class="form-control"   placeholder="Order/SA Item#"  required>
