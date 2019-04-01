@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>TE CONNECTIVITY</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css">
+    <script src="main.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/0.9.0rc1/jspdf.min.js"></script>
+
+    <script type="text/javascript" src="https://insights.connect.te.com/javascripts/api/tableau-2.min.js"></script>
+	<script type="text/javascript" src="js_old/add.js"></script>
+	<script type="text/javascript" src="js_old/logic.js"></script>
+	<script type="text/javascript" src="JS/jspdf.min.js"></script>
+	<script type="text/javascript" src="JS/jspdf.plugin.autotable.min.js"></script>
+	<script type="text/javascript" src="JS/sweetalert.min.js"></script>
+  
+  
+
+<script>var doc = new jsPDF();
+
+    $('#cmd').click(function () {   
+        doc.fromHTML($('#content').html(), 15, 15, {
+            'width': 170,
+                'elementHandlers': specialElementHandlers
+        });
+        doc.save('sample-file.pdf');
+    });
+  </script>
+  <!-- <script>
+    function myFunction() {
+  document.getElementById("myForm").reset();
+}
+  </script> -->
+
+ 
+  
+    
+</head>
+<body style="font-family: 'Montserrat', sans-serif;" >
+
+    
+
+<div class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"  id="onload" data-keyboard="false" data-backdrop="static">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered ">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          
+          <h4 class="modal-title"><i class="fa fa-exclamation-circle"></i>TE CONNECTIVITY </h4>
+          <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button> -->
+        </div>
+        <div class="modal-body">
+          <form action="result.html" onsubmit="validate_form()" class="needs-validation" novalidate>
+            <div class="form-row">
+                <label for="inputEmail3" class="col-sm-3 col-form-label">select week</label>
+                <div class="col-sm-9">
+                <select id="week" class="form-control"   placeholder="Order/SA Item#"  required>
+                    <option value="" disabled selected>Select Week</option>
+                    <option value="01">1</option>
+                    <option value="02">2</option>
+                    <option value="03">3</option>
+                    <option value="04">4</option>
+                    <option value="05">5</option>
+                    <option value="06">6</option>
+                    <option value="07">7</option>
+                    <option value="08">8</option>
+                    <option value="09">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                    <option value="24">24</option>
+                    <option value="25">25</option>
+                    <option value="26">26</option>
+                    <option value="27">27</option>
+                    <option value="28">28</option>
+                    <option value="29">29</option>
+                    <option value="30">30</option>
+                    <option value="31">31</option>
+                    <option value="32">32</option>
+                    <option value="33">33</option>
+                    <option value="34">34</option>
+                    <option value="35">35</option>
+                    <option value="36">36</option>
+                    <option value="37">37</option>
+                    <option value="38">38</option>
+                    <option value="39">39</option>
+                    <option value="40">40</option>
+                    <option value="41">41</option>
+                    <option value="42">42</option>
+                    <option value="43">43</option>
+                    <option value="44">44</option>
+                    <option value="45">45</option>
+                    <option value="46">46</option>
+                    <option value="47">47</option>
+                    <option value="48">48</option>
+                    <option value="49">49</option>
+                    <option value="50">50</option>
+                    <option value="51">51</option>
+                    <option value="52">52</option>
+                </select>
+                </div>
+
+                <label for="inputEmail3" class="col-sm-3 col-form-label mt-4">Select Year</label>
+                      <div class="col-sm-9 mt-4 ">
+                      <select class="form-control" class="form-control" id="year" placeholder="Order/SA Item#"  required>
+                          <option value="" style="">Select Year</option>
+					<option value="2017">2017</option>
+					<option value="2018">2018</option>
+					<option value="2019">2019</option>
+                         
+                      </select>
+                      </div>
+                      <label for="validationCustom01" class="col-sm-3 col-form-label mt-4">Order/SA #</label>
+              <div class="col-sm-9 mt-4 ">
+                
+                  <input type="text" class="input_text form-control" name="validationCustom01" id="order no" placeholder="Order/SA #" onkeyup="disableField()"/ required>
+                </label>
+                
+              </div>
+
+              <label for="validationCustom02" class="col-sm-3 col-form-label mt-4">Order/SA Item# </label>
+              <div class="col-sm-9 mt-4">
+                
+                  <input type="text" class="input_text form-control" name="validationCustom02" id="order item no" placeholder="Order/SA Item#" onkeyup="disableField1()" required >
+                
+              </div>
+
+              <label for="validationCustom02" class="col-sm-3 col-form-label mt-4">Sold To</label>
+              <div class="col-sm-9 mt-4">
+                
+                <input type="text" class="input_text form-control" name="validationCustom03" id="sold to no" placeholder="Sold To" onkeyup="disableField2()" required>
+                
+              </div>
+              <label for="validationCustom02" class="col-sm-3 col-form-label mt-4">Ship To #</label>
+              <div class="col-sm-9 mt-4">
+                
+                <input type="text" class="input_text form-control" name="validationCustom04" id="ship to no" placeholder="Ship To #" onkeyup="disableField3()" required>
+                
+              </div>
+              <label for="validationCustom02" class="col-sm-3 col-form-label mt-4">Material #</label>
+              <div class="col-sm-9 mt-4">
+                
+                <input type="text" class="input_text form-control" name="validationCustom05" id="material no" placeholder="Material #" onkeyup="disableField4()" required>
+                
+              </div>
+
+
+              
+              
+             
+            </div>
+            
+            
+           
+
+            <div class="form-group row">
+                <div class="col-sm-4 mt-2">
+                  <button type="submit" class="btn btn-primary btn-block" id="myFormSubmit" onclick="buttonClick(this.innerHTML)">Submit</button>
+                </div>
+                <div class="col-sm-4 mt-2">
+                <button type="reset" class="btn btn-primary btn-block"  value="Reset form" >Reset</button>
+                </div>
+                <div class="col-sm-4 mt-2">
+                    <!-- <button type="button" class="btn btn-primary btn-block" data-dismiss="modal" aria-label="Close">
+                        Close
+                      </button> -->
+                </div>
+              </div>
+          </form>
+        </div>
+        <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+        </div> -->
+      </div>
+
+    </div>
+</div>
+
+
+
+<!-- Image and text -->
+<nav class="navbar fixed-top navbar-light bg-light navbar-custom">
+        <a class="navbar-brand" href="#">
+          <img src="img/logo.png"  height="50px" class="d-inline-block align-top" alt="">
+        </a>
+
+        <ul class="nav navbar-nav navbar-center">
+          <li><a href="#" style="color:white;"><strong>WELCOME TO THE LIABILITY TRACKER</strong></a></li>
+          
+      </ul>
+</nav>
+<br>
+<br>
+<div class="container-fluid mt-4" id="content">
+<div class="row">
+    <div class="col-md-4 mt-4 ">
+        <div class="card side-card h-100">
+            <div class="card-body">
+        <ul style="list-style-type:none;">
+          <li>
+              <span style="font-size: 1em; line-height: 21px;"><b>Week:</b></span>
+          </li>
+          <li>
+              <span style="font-size: 1em; line-height: 21px;"><b>Year:</b></span>
+          </li>
+            <li>
+                <span style="font-size: 1em; line-height: 21px;"><b>Order #:</b></span>
+                <span id="Ord_num_p" class="output_text" style="width:20px;display:inline;"></span>
+            </li>
+            <li>
+                <span style="font-size: 1em; line-height: 21px;"><b>Ship To #:</b></span>
+                <span id="Ship_to_num_p" class="output_text" style="width: 20px;display:inline;"></span>
+            </li>
+            <li>
+                <span style="font-size: 1em; line-height: 21px;"><b>Ship To Name:</b></span>
+                <span style="width:20px;display:inline;" id="Ship_to_name_p" class="output_text"></
+            </li>
+            <li>
+                <span style="font-size: 1em; line-height: 21px;"><b>Order Item #:</b></span>
+                <span style="width:20px;display:inline;" id="order_item_num_p" class="output_text"> </span>
+            </li>
+            <li>
+                <span style="font-size: 1em; line-height: 21px;"><b>Sold To #:</b></span>
+                <p id="sold_to_num_p" class="output_text" style="display:inline;"></p>
+            </li>
+            <li>
+                <span style="font-size: 1em; line-height: 21px;"><b>Sold To Name:</b></span>
+                <span style="width:20px;display:inline;" id="sold_to_name_p" class="output_text"></span>
+            </li>
+            <li>
+                <span style="font-size: 1em; line-height: 21px;"><b>Sales Org:</b></span>
+                <span style="width:20px;display:inline;" id="Sales_org_p" class="output_text"></span>
+            </li>
+            <li>
+                <span style="font-size: 1em; line-height: 21px;"><b>World Wide #:</b></span>
+                <span style="width:20px;display:inline;" id="wwnum_p" class="output_text"></span>
+            </li>
+            <li>
+                <span style="font-size: 1em; line-height: 21px;"><b>World Wide Name:</b></span>
+					      <span style="width:20px;display:inline;" id="wwname_p" class="output_text"></span>
+            </li>
+            <li>
+                <span style="font-size: 1em; line-height: 21px;"><b>Material #:</b></span>
+					      <span style="width:20px;display:inline;" id="mat_num_p" class="output_text"></span>
+            </li>
+          </ul>
+    </div>
+    </div>
+  </div>
+    <div class="col-md-8">
+      
+      <div class="row">
+        <div class="col-md-4 mt-4">
+            <div class="card text-center card-green">
+                <div class="card-body">
+                    <p class="card-text">Long Term Flexibility</p>
+                  
+                  <div class="spinner"></div>
+                  
+                  
+                </div>
+              </div>
+          </div>
+        
+        <div class="col-md-4 mt-4">
+            <div class="card text-center card-red">
+                <div class="card-body">
+                    <p class="card-text">Short Term Flexibility</p>
+                  
+                  <div class="spinner"></div>
+                  
+                </div>
+              </div>
+        </div>
+        <div class="col-md-4 mt-4">
+            <div class="card text-center card-red">
+                <div class="card-body">
+                    <p class="card-text">Saftey Stock</p>
+                  
+                  <div class="spinner"></div>
+                 
+                </div>
+              </div>
+        </div>
+        <div class="col-md-4 mt-4">
+            <div class="card text-center card-green">
+                <div class="card-body">
+                    <p class="card-text">Long Term Forecast</p>
+                  
+                  
+                  <div class="spinner"></div>
+                </div>
+              </div>
+        </div>
+        <div class="col-md-4 mt-4">
+            <div class="card text-center card-red">
+                <div class="card-body">
+                    <p class="card-text">Short Term Forecast</p>
+                  
+                  
+                  <div class="spinner"></div>
+                </div>
+              </div>
+        </div>
+        <div class="col-md-4 mt-4">
+            <div class="card text-center card-red" >
+                <div class="card-body">
+                    <p class="card-text">Period selection</p>
+                    <div class="spinner"></div>
+                     
+                 
+                </div>
+              </div>
+        </div>
+        <div class="col-md-4 mt-4">
+            <div class="card text-center card-red">
+                <div class="card-body">
+                    <p class="card-text">Contract Type</p>
+                 
+                  <div class="spinner"></div>
+                  
+                </div>
+              </div>
+        </div>
+        <div class="col-md-8 mt-4">
+            <div class="card text-center" >
+                <div class="card-body">
+                  
+                  
+                  <p class="card-text" style="margin-bottom:32px;">Final Decision</p>
+                <div class="row justify-content-center">
+
+                    <div class="spinner1">
+                        <div class="bounce1"></div>
+                        <div class="bounce2"></div>
+                        <div class="bounce3"></div>
+                      </div> 
+                  
+              </div> 
+              </div>
+              </div>
+        </div>
+        <div class="col-md-6 mt-4">
+            <button type="submit" class="btn btn-primary btn-block white-button" data-dismiss="modal" >Order Summary </button>
+        </div>
+        <div class="col-md-6 mt-4">
+            <button type="submit" class="btn btn-primary btn-block" data-dismiss="modal" id="cmd" >Generate PDF</button>
+          </div>
+
+          <div class="col-md-12 mt-3">
+              <button type="submit" class="btn btn-primary btn-block black-button" data-toggle="modal" data-target="#onload" >New Search</button>
+          </div>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div>
+ 
+
+
+ 
+
+<script>
+    
+    var disableField = function () {
+  var state = document.getElementById("order no").value.length > 0;
+  document.getElementById("sold to no").disabled = state;
+  document.getElementById("ship to no").disabled = state;
+  document.getElementById("material no").disabled = state;
+};
+
+var disableField1 = function () {
+  var state = document.getElementById("order item no").value.length > 0;
+  document.getElementById("sold to no").disabled = state;
+  document.getElementById("ship to no").disabled = state;
+  document.getElementById("material no").disabled = state;
+};
+
+var disableField2 = function () {
+  var state = document.getElementById("sold to no").value.length > 0;
+  document.getElementById("order no").disabled = state;
+  document.getElementById("order item no").disabled = state;
+  document.getElementById("ship to no").disabled = state;
+};
+
+var disableField3 = function () {
+  var state = document.getElementById("ship to no").value.length > 0;
+  document.getElementById("order no").disabled = state;
+  document.getElementById("order item no").disabled = state;
+  document.getElementById("sold to no").disabled = state;
+};
+
+var disableField4 = function () {
+  var state = document.getElementById("material no").value.length > 0;
+  document.getElementById("order no").disabled = state;
+  document.getElementById("order item no").disabled = state;
+ };
+
+
+
+
+</script>
+
+  <script>$(window).load(function(){
+    $('#onload').modal('show');
+});</script>
+
+<script>
+$("#prospects_form").submit(function(e) {
+    e.preventDefault();
+});
+</script>
+  <script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
+    </script>
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
