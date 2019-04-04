@@ -1223,11 +1223,14 @@ function finalLogicTwo(logicTwoData,logicTwoAggData,final_dec){
 function finalDec(logic2_dec){
 	var final_dec;
 	if(logic1_dec == "Deviated" || logic2_dec=="Deviated"){
-		document.getElementById("fd_cust_liable").src = "./images/yes.png";
+		// document.getElementById("fd_cust_liable").src = "./images/yes.png";
+		document.getElementById("fd_cust_liable").innerHTML = "Customer-L";
 		final_dec = "Customer Liable";
 		contract_details_pdf[6] = ["Final Decision", ": Customer Liable"];
 	}else{
-		document.getElementById("fd_te_liable").src = "./images/no.png";
+		// document.getElementById("fd_te_liable").src = "./images/no.png";
+		document.getElementById("fd_te_liable").innerHTML = "T-L";
+
 		final_dec = "TE Liable";
 		contract_details_pdf[6] = ["Final Decision", ": TE Liable"];
 	}
@@ -1646,8 +1649,13 @@ function resetVariables(){
 }
 
 function buttonClick(buttonContent){
-	if(buttonContent=="Submit"){validate_fields();}
-	else if(buttonContent=="Reset"){resetContent();}
+	if(buttonContent=="Submit"){
+		validate_fields();
+		$("#onload").modal('toggle');
+	}
+	else if(buttonContent=="Reset"){
+		resetContent();
+	}
 }
 
 function generatePDF(){

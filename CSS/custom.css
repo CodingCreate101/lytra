@@ -1,0 +1,47 @@
+﻿#main_title {
+    text-align: center;
+    
+    width: 100%;
+    height: 20%;
+    justify-content: center;
+}
+p#main_title_text {
+    color: white;
+}
+
+p {
+    width: 100%;
+    height: 100%;
+}
+input[type=text] {
+    border: 1px solid #e98300;
+    border-radius: 1px;
+}
+.select1 {
+    border: 1px solid #e98300;
+    border-radius: 1px;
+}
+.myButton {
+    backface-visibility: hidden;
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    white-space: nowrap;
+    background: #eb8d3c;
+    border-radius: 2px;
+}
+
+    .myButton:hover {
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #1e62d0), color-stop(1, #3d94f6));
+        background: -moz-linear-gradient(top, #1e62d0 5%, #3d94f6 100%);
+        background: -webkit-linear-gradient(top, #1e62d0 5%, #3d94f6 100%);
+        background: -o-linear-gradient(top, #1e62d0 5%, #3d94f6 100%);
+        background: linear-gradient(to bottom, #1e62d0 5%, #3d94f6 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1e62d0', endColorstr='#3d94f6',GradientType=0);
+        background-color: #1e62d0;
+    }
+
+    .myButton:active {
+        position: relative;
+        top: 1px;
+    }
