@@ -6,7 +6,7 @@ function _(x) {
 }
 
 function fillData(elid, elimg, eltext) {
-	_(elid).innerHTML = '<img class="output_image" src="./images/'+ elimg +'.png"> ' + eltext;
+	_(elid).innerHTML = '<img class="output_image" src="./Images/'+ elimg +'.png"> ' + eltext;
 }
 
 // fillData("fd_liabla", "yes", "Customer bla");
@@ -447,24 +447,24 @@ function setOrderDataVars(jsonData){
 		p2_upper_per = parseFloat(jsonData[0][7]["value"]);
 		
 		if(long_term_flex=="yes"){
-			// document.getElementById("ltf_est").src = "./images/yes.png";
+			// document.getElementById("ltf_est").src = "./Images/yes.png";
 			fillData("ltf_status", "yes", " Established");
 			contract_details_pdf[0] = ["Long Term Forecast", ": Established"];
 		}else if(long_term_flex=="no" || long_term_flex == "%null%"){
-			// document.getElementById("ltf_not_est").src = "./images/no.png";
+			// document.getElementById("ltf_not_est").src = "./Images/no.png";
 			fillData("ltf_status", "no", " Not Established");
 			contract_details_pdf[0] = ["Long Term Forecast", ": Not Established"];
 		}
 		
 		if(short_term_flex == "yes" && part_type == "Make to Stock"){
 			document.getElementById("contract_type").innerHTML = "Short Term Flex";
-			// document.getElementById("stf_est").src = "./images/yes.png";
+			// document.getElementById("stf_est").src = "./Images/yes.png";
 			fillData("stf_status", "yes", " Established");
 			
-			// document.getElementById("mts_period_check").src = "./images/yes.png";
+			// document.getElementById("mts_period_check").src = "./Images/yes.png";
 			fillData("period_status", "yes", " Flex/Frozen Zone");
 
-			// document.getElementById("mts_check").src = "./images/yes.png";
+			// document.getElementById("mts_check").src = "./Images/yes.png";
 			fillData("mts_status", "yes", " Make To Stock");
 
 			mts_mto = "mts";
@@ -472,13 +472,13 @@ function setOrderDataVars(jsonData){
 			contract_details_pdf[3] = ["Part Type", ": Make to Stock"];
 		}else if(short_term_flex == "yes" && part_type == "Make to Order"){
 			document.getElementById("contract_type").innerHTML = "Short Term Flex";
-			// document.getElementById("stf_est").src = "./images/yes.png";
+			// document.getElementById("stf_est").src = "./Images/yes.png";
 			fillData("stf_status", "yes", " Not Established");
 
-			// document.getElementById("mto_period_check").src = "./images/yes.png";
+			// document.getElementById("mto_period_check").src = "./Images/yes.png";
 			fillData("period_status", "yes", " Replenishment Lead Time");
 
-			// document.getElementById("mto_check").src = "./images/yes.png";
+			// document.getElementById("mto_check").src = "./Images/yes.png";
 			fillData("mts_status", "yes", " Make To Order");
 
 			mts_mto = "mto";
@@ -486,10 +486,10 @@ function setOrderDataVars(jsonData){
 			contract_details_pdf[3] = ["Part Type", ": Make to Order"];
 		}else if((short_term_flex == "no" || short_term_flex == "%null%") && part_type == "Make to Stock" && safety_stock == "yes"){
 			document.getElementById("contract_type").innerHTML = "ADC";
-			document.getElementById("stf_not_est").src = "./images/no.png";
+			document.getElementById("stf_not_est").src = "./Images/no.png";
 			fillData("stf_status", "no", " Not Established");
 
-			// document.getElementById("mts_check").src = "./images/yes.png";
+			// document.getElementById("mts_check").src = "./Images/yes.png";
 			fillData("mts_status", "yes", " Make To Order");
 
 			rlt_week = parseInt(stated_lead_time);
@@ -498,23 +498,23 @@ function setOrderDataVars(jsonData){
 			contract_details_pdf[3] = ["Part Type", ": Make to Order"];
 		}else if((short_term_flex == "no" || short_term_flex == "%null%") && part_type == "Make to Order" && safety_stock == "yes"){
 			document.getElementById("contract_type").innerHTML = "ADC";
-			document.getElementById("stf_not_est").src = "./images/no.png";
+			document.getElementById("stf_not_est").src = "./Images/no.png";
 			fillData("stf_status", "no", " Not Established");
 
-			// document.getElementById("mto_check").src = "./images/yes.png";
+			// document.getElementById("mto_check").src = "./Images/yes.png";
 			fillData("mts_status", "yes", " Make To Order");
 
-			// document.getElementById("mto_period_check").src = "./images/yes.png";
+			// document.getElementById("mto_period_check").src = "./Images/yes.png";
 			fillData("period_status", "yes", " Replenishment Lead Time");
 
 			mts_mto = "mto";
 			contract_details_pdf[1] = ["Short Term Forecast", ": Not Established"];
 			contract_details_pdf[3] = ["Part Type", ": Make to Order"];
 		}else{
-			document.getElementById("stf_not_est").src = "./images/no.png";
+			document.getElementById("stf_not_est").src = "./Images/no.png";
 			fillData("stf_status", "no", " Not Established");
 
-			// document.getElementById("mto_period_check").src = "./images/yes.png";
+			// document.getElementById("mto_period_check").src = "./Images/yes.png";
 			fillData("period_status", "yes", " Replenishment Lead Time");
 
 			mts_mto = 'mto';
@@ -536,12 +536,12 @@ function setOrderDataVars(jsonData){
 		document.getElementById("ddp_no_p").innerHTML = ddp_no_disp;
 		swal("Order Details Obtained!");
 		if(safety_stock == "yes"){
-			// document.getElementById("ss_est").src = "./images/yes.png";
+			// document.getElementById("ss_est").src = "./Images/yes.png";
 			fillData("ss_status", "yes", " Established");
 			
 			contract_details_pdf[2] = ["Safety Stock", ": Established"];
 		}else if(safety_stock == "no" || safety_stock == "%null%"){
-			// document.getElementById("ss_not_est").src = "./images/no.png";
+			// document.getElementById("ss_not_est").src = "./Images/no.png";
 			fillData("ss_status", "no", " Not Established");
 
 			contract_details_pdf[2] = ["Safety Stock", ": Not Established"];
@@ -856,12 +856,12 @@ function readYoYLTFNo(jsonData){
 function finalLogicOne(variance_per,final_dec){
 	var ele_handle, temp;
 	if(final_dec=="Deviated"){
-		// document.getElementById("logic1_dvt").src = "./images/no.png";
+		// document.getElementById("logic1_dvt").src = "./Images/no.png";
 		fillData("dvt1_status", "no", " Deviated");
 
 		contract_details_pdf[4] = ["Long Term Forecast", ": Customer Deviated"];
 	}else if(final_dec=="Not Deviated"){
-		// document.getElementById("logic1_not_dvt").src = "./images/yes.png";
+		// document.getElementById("logic1_not_dvt").src = "./Images/yes.png";
 		fillData("dvt1_status", "yes", " Not Deviated");
 
 		contract_details_pdf[4] = ["Long Term Forecast", ": Customer Not Deviated"];
@@ -1704,12 +1704,12 @@ function finalLogicTwo(logicTwoData,logicTwoAggData,final_dec){
 	str_table += '</table>';
 	stf_data_pdf.push(f_temp_pdf);
 	if(final_dec == "Deviated"){
-		// document.getElementById("logic2_dvt").src = "./images/no.png";
+		// document.getElementById("logic2_dvt").src = "./Images/no.png";
 		fillData("dvt2_status", "no", " Deviated");
 
 		contract_details_pdf[5] = ["Short Term Forecast", ": Customer Deviated"];
 	}else if(final_dec == "Not Deviated"){
-		// document.getElementById("logic2_not_dvt").src = "./images/yes.png";
+		// document.getElementById("logic2_not_dvt").src = "./Images/yes.png";
 		fillData("dvt2_status", "yes", " Not Deviated");
 
 		contract_details_pdf[5] = ["Short Term Forecast", ": Customer Not Deviated"];
@@ -1727,13 +1727,13 @@ function finalLogicTwo(logicTwoData,logicTwoAggData,final_dec){
 function finalDec(logic2_dec){
 	var final_dec;
 	if(logic1_dec == "Deviated" || logic2_dec=="Deviated"){
-		// document.getElementById("fd_cust_liable").src = "./images/yes.png";
-		_("fd_liabla").innerHTML = '<img class="output_image" src="./images/yes.png">' + ' <img class="customerImg" src="./images/customer.png" title="Customer">' + " Customer Liable";
+		// document.getElementById("fd_cust_liable").src = "./Images/yes.png";
+		_("fd_liabla").innerHTML = '<img class="output_image" src="./Images/yes.png">' + ' <img class="customerImg" src="./Images/customer.png" title="Customer">' + " Customer Liable";
 		final_dec = "Customer Liable";
 		contract_details_pdf[6] = ["Final Decision", ": Customer Liable"];
 	}else{
-		// document.getElementById("fd_te_liable").src = "./images/no.png";
-		_("fd_liabla").innerHTML = '<img class="output_image" src="./images/no.png">' + ' <img class="teImg" src="./images/te.png" title="TE">' + " TE Liable";
+		// document.getElementById("fd_te_liable").src = "./Images/no.png";
+		_("fd_liabla").innerHTML = '<img class="output_image" src="./Images/no.png">' + ' <img class="teImg" src="./Images/te.png" title="TE">' + " TE Liable";
 		
 		final_dec = "TE Liable";
 		contract_details_pdf[6] = ["Final Decision", ": TE Liable"];
