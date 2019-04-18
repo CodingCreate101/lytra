@@ -59,7 +59,7 @@
 						<label for="inputEmail3" class="col-sm-3 col-form-label mt-4">select week</label>
 						<div class="col-sm-9 mt-4">
 							<select id="week" class="form-control" placeholder="Order/SA Item#" required>
-								<option value="" disabled>Select Week</option>
+								<option value="" disabled >Select Week</option>
 								<option value="01">1</option>
 								<option value="02">2</option>
 								<option value="03">3</option>
@@ -119,59 +119,60 @@
 						<div class="col-sm-9 mt-4 ">
 							<select class="form-control" class="form-control" id="year" placeholder="Order/SA Item#"
 								required>
-								<option value="" style="">Select Year</option>
+								<option selected value="" style="">Select Year</option>
 								<option value="2017">2017</option>
 								<option value="2018">2018</option>
-								<option selected value="2019">2019</option>
+								<option selected value="2019" >2019</option>
 							</select>
 						</div>
 
 						<label for="validationCustom01" class="col-sm-3 col-form-label mt-4">Order/SA #</label>
 						<div class="col-sm-9 mt-4 ">
 							<input type="text" class="input_text form-control" name="validationCustom01" id="order no"
-								placeholder="Order/SA #" onkeyup="disableField()" required>
+								placeholder="Order/SA #" onkeyup="disableInputFields(this.id,this.value)" required>
 							</label>
 						</div>
 
 						<label for="validationCustom02" class="col-sm-3 col-form-label mt-4">Order/SA Item# </label>
 						<div class="col-sm-9 mt-4">
 							<input type="text" class="input_text form-control" name="validationCustom02"
-								id="order item no" placeholder="Order/SA Item#" onkeyup="disableField1()" required>
+								id="order item no" placeholder="Order/SA Item#" onkeyup="disableInputFields(this.id,this.value)" onblur="validate_order_item_no(this.id,this.value)" required>
 						</div>
 
 						<label for="validationCustom02" class="col-sm-3 col-form-label mt-4">Sold To</label>
 						<div class="col-sm-9 mt-4">
 							<input value="0002991673" type="text" class="input_text form-control"
 								name="validationCustom03" id="sold to no" placeholder="Sold To"
-								onkeyup="disableField2()" required>
+								 onkeyup="disableInputFields(this.id,this.value)" onblur="validate_shipto_soldto_num(this.id,this.value)" required>
 						</div>
 
 						<label for="validationCustom02" class="col-sm-3 col-form-label mt-4">Ship To #</label>
 						<div class="col-sm-9 mt-4">
 							<input type="text" class="input_text form-control" name="validationCustom04" id="ship to no"
-								placeholder="Ship To #" onkeyup="disableField3()" required>
+								placeholder="Ship To #" onkeyup="disableInputFields(this.id,this.value)" onblur="validate_shipto_soldto_num(this.id,this.value)" required>
 						</div>
 
 						<label for="validationCustom02" class="col-sm-3 col-form-label mt-4">Material #</label>
 						<div class="col-sm-9 mt-4">
 							<input value="968137-2" type="text" class="input_text form-control"
 								name="validationCustom05" id="material no" placeholder="Material #"
-								onkeyup="disableField4()" required>
+								onkeyup="disableInputFields(this.id,this.value)" required>
 						</div>
 
-						<div class="form-group row">
-							<div class="col-sm-4 mt-2">
-								<div id="buttonSection">
-									<button type="submit" class="btn btn-primary" id="buttonSubmit"
-										onclick="buttonClick(this.innerHTML)">Submit</button>
-								</div>
-								<img id="preloader" src="Images/l.gif" style="width:50px;" />
+						
+					</div>
+					<div class="form-group row">
+						<div class="col-sm-4 mt-2">
+							<div id="buttonSection">
+								<button type="submit" class="btn btn-primary" id="buttonSubmit"
+									onclick="buttonClick(this.innerHTML)">Submit</button>
 							</div>
+							<img id="preloader" src="Images/l.gif" style="width:50px;" />
+						</div>
 
-							<div class="col-sm-4 mt-2">
-								<button class="myButton btn btn-primary btn-block" id="buttonRefresh"
-									onclick="resetVariables()">Refresh</button>
-							</div>
+						<div class="col-sm-4 mt-2">
+							<button class="myButton btn btn-primary " id="buttonRefresh"
+								onclick="resetVariables()">Refresh</button>
 						</div>
 					</div>
 				</div>
@@ -180,6 +181,21 @@
 	</div>
 
 	<!--  -->
+	<!--  -->
+
+	<!-- navbar -->
+	<br>
+	<br>
+		<nav class="navbar fixed-top navbar-light bg-light navbar-custom">
+			<a class="navbar-brand" href="#">
+			  <img src="images/te.png"  height="50px" class="d-inline-block align-top" alt="">
+			</a>
+	
+			<ul class="nav navbar-nav navbar-center">
+			  <li><a href="#" style="color:white;"><strong>WELCOME TO THE LIABILITY TRACKER</strong></a></li>
+			  
+		  </ul>
+	</nav>
 	<!--  -->
 
 	<div class="container-fluid mt-4" id="content">
@@ -253,33 +269,37 @@
 						<div class="card text-center card-green">
 							<div class="card-body">
 								<p class="card-text">Long Term Flexibility</p>
-								<div class="spinner">
-									<img id="ltf_est" class="output_image" src="" style="height:20px;" />
-									<img id="ltf_not_est" class="output_image" src="" style="height:20px;" /><br />
+								<div class="" id="ltf_status">
+									<div class="spinner">
+
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 
 					<div class="col-md-4 mt-4">
-						<div class="card text-center card-red">
+						<div class="card text-center card-green">
 							<div class="card-body">
 								<p class="card-text">Short Term Flexibility</p>
-								<div class="spinner">
-									<img id="stf_est" class="output_image" style="height:20px;" />
-									<img id="stf_not_est" class="output_image" style="height:20px;" /><br />
+								<div id="stf_status">
+									<div class="spinner">
+										
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 
 					<div class="col-md-4 mt-4">
-						<div class="card text-center card-red">
+						<div class="card text-center card-green">
 							<div class="card-body">
 								<p class="card-text">Safety Stock</p>
-								<div class="spinner">
-									<img id="ss_est" class="output_image" style="height:20px;" />
-									<img id="ss_not_est" class="output_image" style="height:20px;" /><br />
+								<div id="ss_status">
+									<div class="spinner">
+										<!-- <img id="ss_est" class="output_image" style="height:20px;" /> -->
+										<!-- <img id="ss_not_est" class="output_image" style="height:20px;" /><br /> -->
+									</div>
 								</div>
 							</div>
 						</div>
@@ -290,44 +310,49 @@
 							<div class="card-body">
 								<!-- <p class="card-text">Long Term Forecast</p> -->
 								<a id="logic1_button" class="data_button"><b>Long Term Forecast</b></a>
-								<div class="spinner">
-									<img id="logic1_dvt" class="output_image" src="" style="height:20px;" />
-									&nbsp;&nbsp;&nbsp;&nbsp;
-									<img id="logic1_not_dvt" class="output_image" src="" style="height:20px;" /><br />
+								<div id="dvt1_status">
+									<div class="spinner">
+
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="col-md-4 mt-4">
-						<div class="card text-center card-red">
+						<div class="card text-center card-green">
 							<div class="card-body">
 								<!-- <p class="card-text">Short Term Forecast</p> -->
 								<a id="logic2_button" class="data_button"><b>Short Term Forecast</b></a>
-								<div class="spinner">
-									<img id="logic2_dvt" class="output_image" src="" style="height:20px;" />
-									<img id="logic2_not_dvt" class="output_image" src="" style="height:20px;" /><br />
+
+								<div id="dvt2_status">
+									<div class="spinner">
+
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="col-md-4 mt-4">
-						<div class="card text-center card-red">
+						<div class="card text-center card-green">
 							<div class="card-body">
 								<p class="card-text">Period selection</p>
-								<div class="spinner">
-									<img id="mts_period_check" class="output_image" src="" style="height:20px;" />
-									<img id="mto_period_check" class="output_image" src="" style="height:20px;" /><br />
+								<div id="period_status">
+									<div class="spinner">
+
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="col-md-4 mt-4">
-						<div class="card text-center card-red">
+						<div class="card text-center card-green">
 							<div class="card-body">
 								<p id="contract_type" class="card-text">Contract Type</p>
-								<div class="spinner">
-									<img id="mts_check" class="output_image" src="" style="height:20px;" />
-									<img id="mto_check" class="output_image" src="" style="height:20px;" /><br />
+
+								<div id="mts_status">
+									<div class="spinner">
+
+									</div>
 								</div>
 							</div>
 						</div>
@@ -337,11 +362,10 @@
 							<div class="card-body">
 								<p class="card-text" style="margin-bottom:32px;">Final Decision</p>
 								<div class="row justify-content-center">
-									<div class="spinner">
-										<!-- <img id="fd_cust_liable" class="output_image" style="height:20px;" /> -->
-										<!-- <img id="fd_te_liable" class="output_image" src="" style="height:20px;" /><br />							 -->
-										<span id="fd_cust_liable"></span>
-										<span id="fd_te_liable"></span>
+									<div id="fd_liabla">
+										<div class="spinner">
+
+										</div>
 									</div>
 								</div>
 							</div>
@@ -359,8 +383,8 @@
 					</div>
 
 					<div class="col-md-12 mt-3">
-						<button id="buttonSubmit" onclick="buttonClick('Reset')" type="submit"
-							class="btn btn-primary btn-block black-button" data-toggle="modal" data-target="#onload">New
+						<button onclick="window.location.reload();"
+							class="btn btn-primary btn-block black-button">New
 							Search</button>
 					</div>
 
@@ -395,16 +419,13 @@
 
 	<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 
-	<!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
-	</script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
-	</script>
+	<!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script> -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
 	<script>
 		$(window).load(function () {
+			// stateChange();
 			$('#onload').modal('show');
 		});
 	</script>

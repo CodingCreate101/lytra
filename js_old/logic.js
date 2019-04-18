@@ -1,6 +1,16 @@
 var flowNum = 0,
 comboNo=0;
 
+function _(x) {
+	return document.getElementById(x);
+}
+
+function fillData(elid, elimg, eltext) {
+	_(elid).innerHTML = '<img class="output_image" src="./images/'+ elimg +'.png"> ' + eltext;
+}
+
+// fillData("fd_liabla", "yes", "Customer bla");
+
 function disableInputFields(id,val){
 	document.getElementById(id).value = val.trim();
 	var ele_handle;
@@ -181,10 +191,13 @@ function getSummaryData(viz){
 		viz.dispose();
 		if(flowNum==0){setOrderDataVars(jsonData);}
 		else if(flowNum==1){readOrdersFromOrderData(jsonData);}
-		else if(flowNum==11){readDataForLTFYes(jsonData);}
-		else if(flowNum==12){readYoYLTFNo(jsonData);}
-		else if(flowNum==21){readMTS(jsonData);}
-		else if(flowNum==22){readMTO(jsonData);}
+		else if(flowNum==11){readShipperQty(jsonData);}
+		else if(flowNum==12){readDataForLTFYes(jsonData);}
+		else if(flowNum==13){readYoYLTFNo(jsonData);}
+		else if(flowNum==211){readMTSOrder(jsonData);}
+		else if(flowNum==212){readMTSDemand(jsonData);}
+		else if(flowNum==221){readMTOOrder(jsonData);}
+		else if(flowNum==222){readMTODemand(jsonData);}
 		else if(flowNum==3){readOrderSummary(jsonData);}
 		else if(flowNum==41){readFinalCallOffForSafetyStock(jsonData);}
 		else if(flowNum==42){readDemandForSafetyStock(jsonData);}
@@ -192,7 +205,8 @@ function getSummaryData(viz){
 }
 
 var order_no="", order_item_no="", year, week, sold_to="", sold_to_name="", ship_to="", ship_to_name="", material_no, sales_org="", long_term_flex,
-short_term_flex, safety_stock, stated_lead_time, part_type, ww_number, ww_name, s_ship_week, s_dock_week, ltf_demand_qty, ltf_final_calloff, ltf_r_final_calloff, ltf_shipped_qty, logic1_dec,
+short_term_flex, safety_stock, stated_lead_time, part_type, ww_number, ww_name, s_ship_week, s_dock_week, ltf_demand_qty, ltf_final_calloff, ltf_r_final_calloff, ltf_shipped_qty, ltf_shipper_qty, ltf_ship_week, ltf_dock_week,
+logic1_dec, mts_mto_order_data,
 mts_mto, rlt_week, p1_ll_week, p1_ul_week, p2_ll_week, p2_ul_week, p1_lower_per, p1_upper_per, p2_lower_per, p2_upper_per, ddp_no="", limit_snapshots=8,
 logic1_f_str, logic2_f_str, safety_stock_f_str, order_no_str="", ship_to_str="", sold_to_str="", sales_org_str="", order_summary_str="", ddp_no_str="", selected_crw_weekdiff, ss_final_call_off, ss_rfinal_call_off, ss_shipped_qty, week_type="",
 order_no_disp="", order_item_no_disp="", sales_org_disp="", ship_to_disp="", ship_to_name_disp="", sold_to_disp="", sold_to_name_disp="", ddp_no_disp="",
@@ -433,33 +447,51 @@ function setOrderDataVars(jsonData){
 		p2_upper_per = parseFloat(jsonData[0][7]["value"]);
 		
 		if(long_term_flex=="yes"){
-			document.getElementById("ltf_est").src = "./images/yes.png";
+			// document.getElementById("ltf_est").src = "./images/yes.png";
+			fillData("ltf_status", "yes", " Established");
 			contract_details_pdf[0] = ["Long Term Forecast", ": Established"];
 		}else if(long_term_flex=="no" || long_term_flex == "%null%"){
-			document.getElementById("ltf_not_est").src = "./images/no.png";
+			// document.getElementById("ltf_not_est").src = "./images/no.png";
+			fillData("ltf_status", "no", " Not Established");
 			contract_details_pdf[0] = ["Long Term Forecast", ": Not Established"];
 		}
 		
 		if(short_term_flex == "yes" && part_type == "Make to Stock"){
 			document.getElementById("contract_type").innerHTML = "Short Term Flex";
-			document.getElementById("stf_est").src = "./images/yes.png";
-			document.getElementById("mts_period_check").src = "./images/yes.png";
-			document.getElementById("mts_check").src = "./images/yes.png";
+			// document.getElementById("stf_est").src = "./images/yes.png";
+			fillData("stf_status", "yes", " Established");
+			
+			// document.getElementById("mts_period_check").src = "./images/yes.png";
+			fillData("period_status", "yes", " Flex/Frozen Zone");
+
+			// document.getElementById("mts_check").src = "./images/yes.png";
+			fillData("mts_status", "yes", " Make To Stock");
+
 			mts_mto = "mts";
 			contract_details_pdf[1] = ["Short Term Forecast", ": Established"];
 			contract_details_pdf[3] = ["Part Type", ": Make to Stock"];
 		}else if(short_term_flex == "yes" && part_type == "Make to Order"){
 			document.getElementById("contract_type").innerHTML = "Short Term Flex";
-			document.getElementById("stf_est").src = "./images/yes.png";
-			document.getElementById("mto_period_check").src = "./images/yes.png";
-			document.getElementById("mto_check").src = "./images/yes.png";
+			// document.getElementById("stf_est").src = "./images/yes.png";
+			fillData("stf_status", "yes", " Not Established");
+
+			// document.getElementById("mto_period_check").src = "./images/yes.png";
+			fillData("period_status", "yes", " Replenishment Lead Time");
+
+			// document.getElementById("mto_check").src = "./images/yes.png";
+			fillData("mts_status", "yes", " Make To Order");
+
 			mts_mto = "mto";
 			contract_details_pdf[1] = ["Short Term Forecast", ": Established"];
 			contract_details_pdf[3] = ["Part Type", ": Make to Order"];
 		}else if((short_term_flex == "no" || short_term_flex == "%null%") && part_type == "Make to Stock" && safety_stock == "yes"){
 			document.getElementById("contract_type").innerHTML = "ADC";
 			document.getElementById("stf_not_est").src = "./images/no.png";
-			document.getElementById("mts_check").src = "./images/yes.png";
+			fillData("stf_status", "no", " Not Established");
+
+			// document.getElementById("mts_check").src = "./images/yes.png";
+			fillData("mts_status", "yes", " Make To Order");
+
 			rlt_week = parseInt(stated_lead_time);
 			mts_mto = "mto";
 			contract_details_pdf[1] = ["Short Term Forecast", ": Not Established"];
@@ -467,19 +499,30 @@ function setOrderDataVars(jsonData){
 		}else if((short_term_flex == "no" || short_term_flex == "%null%") && part_type == "Make to Order" && safety_stock == "yes"){
 			document.getElementById("contract_type").innerHTML = "ADC";
 			document.getElementById("stf_not_est").src = "./images/no.png";
-			document.getElementById("mto_check").src = "./images/yes.png";
-			document.getElementById("mto_period_check").src = "./images/yes.png";
+			fillData("stf_status", "no", " Not Established");
+
+			// document.getElementById("mto_check").src = "./images/yes.png";
+			fillData("mts_status", "yes", " Make To Order");
+
+			// document.getElementById("mto_period_check").src = "./images/yes.png";
+			fillData("period_status", "yes", " Replenishment Lead Time");
+
 			mts_mto = "mto";
 			contract_details_pdf[1] = ["Short Term Forecast", ": Not Established"];
 			contract_details_pdf[3] = ["Part Type", ": Make to Order"];
 		}else{
 			document.getElementById("stf_not_est").src = "./images/no.png";
-			document.getElementById("mto_period_check").src = "./images/yes.png";
+			fillData("stf_status", "no", " Not Established");
+
+			// document.getElementById("mto_period_check").src = "./images/yes.png";
+			fillData("period_status", "yes", " Replenishment Lead Time");
+
 			mts_mto = 'mto';
 			contract_details_pdf[1] = ["Short Term Forecast", ": Not Established"];
 			contract_details_pdf[3] = ["Part Type", ": Make to Order"];
 		}
 		//write data to page
+		// $(".spinCon").removeClass("spinner");
 		document.getElementById("Ord_num_p").innerHTML = order_no_disp;
 		document.getElementById("Ship_to_num_p").innerHTML = ship_to_disp;
 		document.getElementById("Ship_to_name_p").innerHTML = ship_to_name_disp;
@@ -493,10 +536,14 @@ function setOrderDataVars(jsonData){
 		document.getElementById("ddp_no_p").innerHTML = ddp_no_disp;
 		swal("Order Details Obtained!");
 		if(safety_stock == "yes"){
-			document.getElementById("ss_est").src = "./images/yes.png";
+			// document.getElementById("ss_est").src = "./images/yes.png";
+			fillData("ss_status", "yes", " Established");
+			
 			contract_details_pdf[2] = ["Safety Stock", ": Established"];
 		}else if(safety_stock == "no" || safety_stock == "%null%"){
-			document.getElementById("ss_not_est").src = "./images/no.png";
+			// document.getElementById("ss_not_est").src = "./images/no.png";
+			fillData("ss_status", "no", " Not Established");
+
 			contract_details_pdf[2] = ["Safety Stock", ": Not Established"];
 		}
 		if((short_term_flex=="no" || short_term_flex=="%null%") && (long_term_flex=="no" || long_term_flex=="%null%") && (safety_stock=="no" || safety_stock=="%null%")){
@@ -589,7 +636,7 @@ function readOrdersFromOrderData(jsonData){
 	combo_details_pdf.push(["World Wide Name", ": "+ww_name]);
 	combo_details_pdf.push(["Material #", ": "+material_no]);
 	if(long_term_flex=="yes"){
-		getDataForLTFYes();
+		getShipperQty();
 	}else if(long_term_flex=="no" || long_term_flex == "%null%"){
 		initYoYLTFNo();
 	}
@@ -599,8 +646,35 @@ function readOrdersFromOrderData(jsonData){
 	}
 }
 
-function getDataForLTFYes(){
+function getShipperQty(){
 	flowNum=11;
+	var options={
+		"Year":year,
+		"Week":week,
+		"Worldwide Number":ww_number,
+		"Material Number":material_no
+	},
+	newOptions = setOptions(), keyName;
+	for (keyName in newOptions){options[keyName]=newOptions[keyName];}
+	options["Customer Request Ship Calendar Week Number"] = year + week;
+	selectViz("vizContainer2", "LTFShipperQty", options);
+}
+
+function readShipperQty(jsonData){
+	var len_jsonData = jsonData.length;
+	if(len_jsonData == 0){
+		ltf_shipper_qty = "0";
+	}else if(len_jsonData == 1){
+		ltf_shipper_qty = jsonData[0][1]["value"];
+	}else{
+		ltf_shipper_qty = jsonData[0][len_jsonData-1]["value"];
+		alert("multiple schedule lines for Shipper Qty!");
+	}
+	getDataForLTFYes();
+}
+
+function getDataForLTFYes(){
+	flowNum=12;
 	var options={
 		"Year":year,
 		"Week":week,
@@ -613,17 +687,44 @@ function getDataForLTFYes(){
 function readDataForLTFYes(jsonData){
 	// try{
 	var len_jsonData = jsonData.length;
-	var result_status, result_val;
-	if(len_jsonData==0){result_status="No data for Long Term Flex";resetContent();toggleElementAbility("buttonSubmit");}
-	else if(len_jsonData==1){
+	var result_status, result_val, i, p_dock_week, c_dock_week;
+	if(len_jsonData==0){
+		result_status="No data for Long Term Flex";resetContent();toggleElementAbility("buttonSubmit");
+	}else if(len_jsonData==1){
 		result_status = "success";
-		ltf_demand_qty = jsonData[0][6]["value"];
-		ltf_final_calloff = jsonData[0][7]["value"];
-		ltf_r_final_calloff = jsonData[0][4]["value"];
-		ltf_shipped_qty = jsonData[0][5]["value"];
+		ltf_ship_week = jsonData[0][1]["value"];
+		ltf_dock_week = jsonData[0][0]["value"];
+		ltf_demand_qty = jsonData[0][7]["value"];
+		ltf_final_calloff = jsonData[0][8]["value"];
+		ltf_r_final_calloff = jsonData[0][5]["value"];
+		ltf_shipped_qty = jsonData[0][6]["value"];
+		finalDecLTFYes();
+	}else if(len_jsonData>1){
+		result_status = "success";
+		for(i=0;i<len_jsonData;i++){
+			if(i==0){
+				c_dock_week = parseInt(jsonData[i][0]["value"]);
+				p_dock_week = c_dock_week;
+				ltf_ship_week = jsonData[i][1]["value"];
+				ltf_dock_week = jsonData[i][0]["value"];
+				ltf_demand_qty = jsonData[i][7]["value"];
+				ltf_shipped_qty = jsonData[i][6]["value"];
+				ltf_final_calloff = parseFloat(jsonData[i][8]["value"]);
+				ltf_r_final_calloff = parseFloat(jsonData[i][5]["value"]);
+			}else{
+				c_dock_week = parseInt(jsonData[i][0]["value"]);
+				ltf_final_calloff += parseFloat(jsonData[i][8]["value"]);
+				ltf_r_final_calloff += parseFloat(jsonData[i][5]["value"]);
+			}
+			if(c_dock_week > p_dock_week){
+				ltf_dock_week = jsonData[i][0]["value"];
+				ltf_demand_qty = jsonData[i][7]["value"];
+				ltf_shipped_qty = jsonData[i][6]["value"];
+			}
+			p_dock_week = parseInt(jsonData[i][0]["value"]);
+		}
 		finalDecLTFYes();
 	}
-	else if(len_jsonData>1){result_status="multiple records found(for Long Term Flex)!";resetContent();toggleElementAbility("buttonSubmit");}
 	if(result_status != "success"){alert(result_status);}
 	// }catch(e){
 		// console.log(e);
@@ -632,26 +733,54 @@ function readDataForLTFYes(jsonData){
 }
 
 function finalDecLTFYes(){
-	var demand, finalCalloff, rfinalCalloff, variance_per, rvariance_per, final_dec;
-	demand = parseFloat(ltf_demand_qty);
-	finalCalloff = parseFloat(ltf_final_calloff);
-	rfinalCalloff = parseFloat(ltf_r_final_calloff);
-	if(demand==0){
+	var demand, finalCalloff, rfinalCalloff, variance_per, rvariance_per, shipper_qty, round_up_ratio, round_up_qty, final_dec, per_ll, per_ul;
+	demand = Math.round(parseFloat(ltf_demand_qty));
+	finalCalloff = ltf_final_calloff;
+	rfinalCalloff = ltf_r_final_calloff;
+	if(ltf_shipper_qty == "%null%"){
+		shipper_qty = 0;
+	}else{
+		shipper_qty = Math.round(parseFloat(ltf_shipper_qty));
+	}
+	
+	if(shipper_qty == 0){
+		round_up_ratio = 0;
+	}else{
+		round_up_ratio = Math.round(demand/shipper_qty);
+	}
+	if(round_up_ratio == 0){
+		round_up_qty = Math.round(demand);
+	}else{
+		round_up_qty = Math.round(shipper_qty*round_up_ratio);
+	}
+	
+	if(round_up_qty==0){
 		if(finalCalloff==0){variance_per=0;}else if(finalCalloff!=0){variance_per=1;}
-	}else{variance_per = (finalCalloff/demand)-1;}
-	variance_per = variance_per.toFixed(2);
-	if(demand==0){
 		if(rfinalCalloff==0){rvariance_per=0;}else if(rfinalCalloff!=0){rvariance_per=1;}
-	}else{rvariance_per = (rfinalCalloff/demand)-1;}
+	}else{
+		variance_per = (finalCalloff/round_up_qty)-1;
+		rvariance_per = (rfinalCalloff/round_up_qty)-1;
+	}
+	variance_per = variance_per.toFixed(2);
 	rvariance_per = rvariance_per.toFixed(2);
-	if(rvariance_per <= 0.15 && rvariance_per >= -0.15){
+	if(ww_number == "0000000362" || ww_number == "0000000179"){
+		per_ll = 0;
+		per_ul = 0.15;
+	}else if(ww_number == "0000000899"){
+		per_ll = 0;
+		per_ul = 0;
+	}else{
+		per_ll = 0;
+		per_ul = 0;
+	}
+	if(rvariance_per <= per_ul && rvariance_per >= per_ll){
 		final_dec = "Not Deviated";
 	}else{
 		final_dec = "Deviated";
 	}
-	logic1_f_str = '<table><tr><th>Week</th><th>Shipped Quantity</th><th>Final CallOff</th><th>Committed Quantity</th><th>% Variance</th><th>Review Week Final CallOff</th><th>% Review Week Variance</th></tr><tr><td>'+year+week+'</td><td>'+ltf_shipped_qty+'</td><td>'+(Math.round(finalCalloff)).toLocaleString('en')+'</td><td>'+(Math.round(demand)).toLocaleString('en')+'</td><td>'+(Math.round(variance_per*100)).toString()+'%';
-	ltf_data_pdf.push(["Week","Shipped Quantity","Final CallOff","Committed Quantity","% Variance","Review Week Final CallOff","% Review Week Variance"]);
-	ltf_data_pdf.push([[year+week, ltf_shipped_qty, (Math.round(finalCalloff)).toLocaleString('en'), (Math.round(demand)).toLocaleString('en'), (Math.round(variance_per*100)).toString()+'%', (Math.round(rfinalCalloff)).toLocaleString('en'), (Math.round(rvariance_per*100)).toString()+'%']]);
+	logic1_f_str = '<table><tr><th>Ship Week</th><th>Dock Week</th><th>Shipped Quantity</th><th>APQ</th><th>Round Up Quantity</th><th>Final CallOff</th><th>Committed Quantity</th><th>% Variance</th><th>Review Week Final CallOff</th><th>% Review Week Variance</th></tr><tr><td>'+ltf_ship_week+'</td><td>'+ltf_dock_week+'</td><td>'+ltf_shipped_qty+'</td><td>'+ltf_shipper_qty+'</td><td>'+round_up_qty.toLocaleString('en')+'</td><td>'+(Math.round(finalCalloff)).toLocaleString('en')+'</td><td>'+(Math.round(demand)).toLocaleString('en')+'</td><td>'+(Math.round(variance_per*100)).toString()+'%';
+	ltf_data_pdf.push(["Ship Week","Dock Week","Shipped Quantity","APQ","Round Up Quantity","Final CallOff","Committed Quantity","% Variance","Review Week Final CallOff","% Review Week Variance"]);
+	ltf_data_pdf.push([[ltf_ship_week, ltf_dock_week, ltf_shipped_qty, ltf_shipper_qty, round_up_qty.toLocaleString('en'), (Math.round(finalCalloff)).toLocaleString('en'), (Math.round(demand)).toLocaleString('en'), (Math.round(variance_per*100)).toString()+'%', (Math.round(rfinalCalloff)).toLocaleString('en'), (Math.round(rvariance_per*100)).toString()+'%']]);
 	if(variance_per < 0){
 		logic1_f_str += '&nbsp;&nbsp;<img src="Images/arrow-down.jpg" class="img_arrow" />';
 	}else if(variance_per > 0){
@@ -663,7 +792,7 @@ function finalDecLTFYes(){
 }
 
 function initYoYLTFNo(){
-	flowNum=12;
+	flowNum=13;
 	var options= {
 		"Year":year,
 		"Week":week
@@ -674,7 +803,7 @@ function initYoYLTFNo(){
 }
 
 function readYoYLTFNo(jsonData){
-	var i, CY_val=0, PY_val=0, variance_per, final_dec, t_week = parseInt(week), temp, temp_pdf=[];
+	var i, CY_val=0, PY_val=0, variance_per, final_dec, t_week = parseInt(week), temp, temp_pdf=[], per_ll, per_ul;
 	var len_jData = jsonData.length;
 	logic1_f_str = '<table><tr><th>Week</th><th>'+year+'</th><th>'+(parseInt(year)-1).toString()+'</th></tr>';
 	ltf_data_pdf.push(["Week", year, (parseInt(year)-1).toString()]);
@@ -704,7 +833,17 @@ function readYoYLTFNo(jsonData){
 		logic1_f_str += '&nbsp;&nbsp;<img src="Images/arrow-up.jpg" class="img_arrow" />';
 	}
 	logic1_f_str +='</span>';
-	if(variance_per <= 0.15 && variance_per >= -0.15){
+	if(ww_number == "0000000362" || ww_number == "0000000179"){
+		per_ll = 0;
+		per_ul = 0.15;
+	}else if(ww_number == "0000000899"){
+		per_ll = 0;
+		per_ul = 0;
+	}else{
+		per_ll = 0;
+		per_ul = 0;
+	}
+	if(variance_per <= per_ul && variance_per >= per_ll){
 		final_dec = "Not Deviated";
 	}else{
 		final_dec = "Deviated";
@@ -717,10 +856,14 @@ function readYoYLTFNo(jsonData){
 function finalLogicOne(variance_per,final_dec){
 	var ele_handle, temp;
 	if(final_dec=="Deviated"){
-		document.getElementById("logic1_dvt").src = "./images/no.png";
+		// document.getElementById("logic1_dvt").src = "./images/no.png";
+		fillData("dvt1_status", "no", " Deviated");
+
 		contract_details_pdf[4] = ["Long Term Forecast", ": Customer Deviated"];
 	}else if(final_dec=="Not Deviated"){
-		document.getElementById("logic1_not_dvt").src = "./images/yes.png";
+		// document.getElementById("logic1_not_dvt").src = "./images/yes.png";
+		fillData("dvt1_status", "yes", " Not Deviated");
+
 		contract_details_pdf[4] = ["Long Term Forecast", ": Customer Not Deviated"];
 	}
 	ele_handle = document.getElementById("logic1_button");
@@ -735,7 +878,26 @@ function finalLogicOne(variance_per,final_dec){
 }
 
 function initMTS(){
-	flowNum=21;
+	flowNum=211;
+	var options={
+		"Period 1 LL Week": p1_ll_week,
+		"Period 2 UL Week": p2_ul_week,
+		"Year": year,
+		"Week": week,
+	},
+	newOptions = setOptions(), keyName;
+	for (keyName in newOptions){options[keyName]=newOptions[keyName];}
+	options["Customer Request Ship Calendar Week Number"] = year + week;
+	selectViz("vizContainer3", "MTS-FinalCallOff", options);
+}
+
+function readMTSOrder(jsonData){
+	mts_mto_order_data = jsonData;
+	getMTSDemand();
+}
+
+function getMTSDemand(){
+	flowNum=212;
 	var options={
 		"Period 1 LL Week": p1_ll_week,
 		"Period 2 UL Week": p2_ul_week,
@@ -745,14 +907,23 @@ function initMTS(){
 	newOptions = setOptions(), keyName;
 	for (keyName in newOptions){options[keyName]=newOptions[keyName];}
 	options["Customer Request Ship Calendar Week"] = year + week;
-	selectViz("vizContainer3", "MTS", options);
+	selectViz("vizContainer4", "MTS-Demand", options);
 }
 
-function readMTS(jsonData){
+function readMTSDemand(jsonData){
+	try{
 	var len_jsonData = jsonData.length, len_agg_data,
-	i, mts_data=[[],[],[],[],[],[],[],[],[],[],[],[]], mts_agg_data=[[],[],[],[],[],[],[]], row_count = 0, snapshot_week, variance_per, rvariance_per, weekly_dec, final_dec = "Not Deviated", demand_qty = 0, final_call_off = 0, rfinal_call_off = 0, week_diff, i_doc, period_str,
-	s_year = parseInt(year), s_week = parseInt(week), start_year, start_week, d_year, d_week, c_sw, p_sw, p_order_no, temp, n_snapshot_week, n_start_week;
-	
+	len_order_jsonData = mts_mto_order_data.length,
+	i, j, mts_data=[[],[],[],[],[],[],[],[],[],[],[],[],[]], mts_agg_data=[[],[],[],[],[],[],[]], flag_order_array=[], row_count = 0, snapshot_week, variance_per, rvariance_per, weekly_dec, final_dec = "Not Deviated", demand_qty = 0, final_call_off = 0, rfinal_call_off = 0, week_diff, i_doc, period_str,
+	s_year = parseInt(year), s_week = parseInt(week), start_year, start_week, d_year, d_week, c_sw, p_sw, p_order_no, temp, n_snapshot_week, n_start_week,
+	d_order_no, o_order_no, d_order_item, o_order_item, d_ship_date, o_ship_date, agg_final_call_off=0, agg_rfinal_call_off=0;
+	//populate flag_order_array with default 'Yes', number equal to number of records retrieved in order request
+	for(i=0;i<len_order_jsonData;i++){
+		flag_order_array.push("Yes");
+		agg_final_call_off += parseInt(mts_mto_order_data[i][5]["value"]);
+		agg_rfinal_call_off += parseInt(mts_mto_order_data[i][6]["value"]);
+	}
+
 	if(s_week-p2_ul_week <= 0){
 		start_year = s_year-1;
 		start_week = 52-Math.abs(s_week-p2_ul_week);
@@ -769,70 +940,47 @@ function readMTS(jsonData){
 		d_year = s_year; d_week = s_week;
 		n_start_week = parseInt(concoctYearWeek(start_year, start_week));
 		while(n_snapshot_week > n_start_week){
-			temp = start_week.toString();
-			if(temp.length == 1){temp = "0" + temp;}
-			c_sw = start_year.toString() + temp;
-			p_sw = c_sw;
-			mts_data[0].push("*" + c_sw);	//snapshot calendar week
-			mts_data[1].push("Line does not exist");	//schedule line
-			mts_data[2].push("Line does not exist");	//order number
-			mts_data[3].push("Line does not exist");	//order item
-			mts_data[4].push("Line does not exist");	//delivery schedule date
-			mts_data[5].push("Line does not exist");	//ship date
-			mts_data[6].push("Line does not exist");	//dock date
-			mts_data[7].push("Line does not exist");	//idoc
-			mts_data[8].push("0");	//shipped qty
-			mts_data[9].push("0");	//demand qty
-			mts_data[10].push("0");	//final call off
-			mts_data[11].push("0");	//review week final call off
-			mts_agg_data[0].push(1);	//row_count
-			mts_agg_data[1].push(0);	//agg demand qty
-			mts_agg_data[2].push(0);	//agg final call off
-			mts_agg_data[3].push(0);	//% variance
-			mts_agg_data[4].push(0);	//agg review week final call off
-			mts_agg_data[5].push(0);	//% review week variance
-			if(p2_lower_per == -1){mts_agg_data[6].push("Not Deviated");}	//weekly decision
-			else{
-				mts_agg_data[6].push("Deviated");
-				final_dec = "Deviated";
-			}
-			
-			if(start_week == 52){start_year += 1;start_week = 1;}else{start_week += 1;}
-			n_start_week = parseInt(concoctYearWeek(start_year, start_week));
-		}
-	}else{
-		for(i=0;i<len_jsonData;i++){
-			n_start_week = parseInt(concoctYearWeek(start_year, start_week));
-			len_agg_data = mts_agg_data[0].length;
-			snapshot_week = jsonData[i][9]["value"];
-			n_snapshot_week = parseInt(snapshot_week);
-			d_year = parseInt(snapshot_week.substring(0,4));
-			d_week = parseInt(snapshot_week.substring(4,6));
-			week_diff = parseInt(jsonData[i][7]["value"]);
-			demand_qty = jsonData[i][14]["value"];
-			if(demand_qty == "%null%"){demand_qty = 0;}else{demand_qty = parseFloat(demand_qty);}
-			final_call_off = jsonData[i][10]["value"];
-			rfinal_call_off = jsonData[i][11]["value"];
-			if(final_call_off == "%null%"){final_call_off = 0;}else{final_call_off = parseFloat(final_call_off);}
-			if(rfinal_call_off == "%null%"){rfinal_call_off = 0;}else{rfinal_call_off = parseFloat(rfinal_call_off);}
-			
-			while(n_snapshot_week > n_start_week){
+			for(i=0;i<len_order_jsonData;i++){
 				temp = start_week.toString();
 				if(temp.length == 1){temp = "0" + temp;}
 				c_sw = start_year.toString() + temp;
 				p_sw = c_sw;
 				mts_data[0].push("*" + c_sw);	//snapshot calendar week
 				mts_data[1].push("Line does not exist");	//schedule line
-				mts_data[2].push("Line does not exist");	//order number
-				mts_data[3].push("Line does not exist");	//order item
 				mts_data[4].push("Line does not exist");	//delivery schedule date
-				mts_data[5].push("Line does not exist");	//ship date
-				mts_data[6].push("Line does not exist");	//dock date
 				mts_data[7].push("Line does not exist");	//idoc
 				mts_data[8].push("0");	//shipped qty
 				mts_data[9].push("0");	//demand qty
-				mts_data[10].push("0");	//final call off
-				mts_data[11].push("0");	//review week final call off
+				mts_data[12].push("Line does not exist");	//default delivery plant
+				if(len_order_jsonData >0){	//check if order data is available
+					mts_data[2].push(mts_mto_order_data[i][4]["value"]);	//order number
+					mts_data[3].push(mts_mto_order_data[i][3]["value"]);	//order item
+					mts_data[5].push(mts_mto_order_data[i][0]["value"]);	//ship date
+					mts_data[6].push(mts_mto_order_data[i][1]["value"]);	//dock date
+					mts_data[10].push(mts_mto_order_data[i][5]["value"]);	//final call off
+					mts_data[11].push(mts_mto_order_data[i][6]["value"]);	//review week final call off
+				}else{	//if no order data available
+					mts_data[2].push("Line does not exist");	//order number
+					mts_data[3].push("Line does not exist");	//order item
+					mts_data[5].push("Line does not exist");	//ship date
+					mts_data[6].push("Line does not exist");	//dock date
+					mts_data[10].push("0");	//final call off
+					mts_data[11].push("0");	//review week final call off
+				}
+			}
+			if(len_order_jsonData > 0){
+				mts_agg_data[0].push(len_order_jsonData);	//row_count
+				mts_agg_data[1].push(0);	//agg demand qty
+				mts_agg_data[2].push(agg_final_call_off);	//agg final call off
+				mts_agg_data[3].push(calPerVariance(0,agg_final_call_off));	//% variance
+				mts_agg_data[4].push(agg_rfinal_call_off);	//agg review week final call off
+				mts_agg_data[5].push(calPerVariance(0,agg_rfinal_call_off));	//% review week variance
+				if(p2_lower_per == -1){mts_agg_data[6].push("Not Deviated");}	//weekly decision
+				else{
+					mts_agg_data[6].push("Deviated");
+					final_dec = "Deviated";
+				}
+			}else{
 				mts_agg_data[0].push(1);	//row_count
 				mts_agg_data[1].push(0);	//agg demand qty
 				mts_agg_data[2].push(0);	//agg final call off
@@ -844,7 +992,125 @@ function readMTS(jsonData){
 					mts_agg_data[6].push("Deviated");
 					final_dec = "Deviated";
 				}
+			}
+			if(start_week == 52){start_year += 1;start_week = 1;}else{start_week += 1;}
+			n_start_week = parseInt(concoctYearWeek(start_year, start_week));
+		}
+	}else{
+		for(i=0;i<len_jsonData;i++){
+			snapshot_week = jsonData[i][10]["value"]; //moved here to make sure that the condition to compare previous and current snapshots
+			if(i==0){p_sw = snapshot_week;}	//init p_sw with first snapshot_week
+			if(snapshot_week != p_sw){	//check and create data for demand if order data is available
+				if(flag_order_array.includes("Yes")){
+					for(j=0;j<len_order_jsonData;j++){
+						if(flag_order_array[j] == "Yes"){
+							mts_data[0].push("*"+p_sw);	//snapshot calendar week
+							mts_data[1].push("Line does not exist");	//schedule line
+							mts_data[2].push(mts_mto_order_data[j][4]["value"]);	//order number
+							mts_data[3].push(mts_mto_order_data[j][3]["value"]);	//order item
+							mts_data[4].push("Line does not exist");	//delivery schedule date
+							mts_data[5].push(mts_mto_order_data[j][0]["value"]);	//ship date
+							mts_data[6].push(mts_mto_order_data[j][1]["value"]);	//dock date
+							mts_data[7].push("Line does not exist");	//idoc
+							mts_data[8].push("0");	//shipped qty
+							mts_data[12].push("Line does not exist");	//default delivery plant
+							mts_data[9].push("0");	//demand qty
+							mts_data[10].push(mts_mto_order_data[j][5]["value"]);	//final call off
+							mts_data[11].push(mts_mto_order_data[j][6]["value"]);	//review week final call off
+							mts_agg_data[0][mts_agg_data[0].length-1] += 1; 
+						}
+						flag_order_array[j] = "Yes";	//reset flag_order_array values
+					}
+				}
+			}else{
 				
+			}
+			
+			n_start_week = parseInt(concoctYearWeek(start_year, start_week));
+			len_agg_data = mts_agg_data[0].length;
+			n_snapshot_week = parseInt(snapshot_week);
+			d_year = parseInt(snapshot_week.substring(0,4));
+			d_week = parseInt(snapshot_week.substring(4,6));
+			week_diff = parseInt(jsonData[i][8]["value"]);
+			demand_qty = jsonData[i][13]["value"];
+			d_order_no = jsonData[i][0]["value"];
+			d_order_item = jsonData[i][7]["value"];
+			d_ship_date = jsonData[i][3]["value"];
+			
+			if(demand_qty == "%null%"){demand_qty = 0;}else{demand_qty = parseFloat(demand_qty);}
+			
+			for(j=0;j<len_order_jsonData;j++){
+				o_order_no = mts_mto_order_data[j][4]["value"];
+				o_order_item = mts_mto_order_data[j][3]["value"];
+				o_ship_date = mts_mto_order_data[j][0]["value"];
+				if(d_order_no == o_order_no && d_order_item == o_order_item && d_ship_date == o_ship_date){// blend check between demand and order for fields order no, order item no and ship date
+					flag_order_array[j] = "No";
+					final_call_off = mts_mto_order_data[j][5]["value"];
+					rfinal_call_off = mts_mto_order_data[j][6]["value"];
+					break;
+				}else{
+					final_call_off = 0;
+					rfinal_call_off = 0;
+				}
+			}
+			
+			if(final_call_off == "%null%"){final_call_off = 0;}else{final_call_off = parseFloat(final_call_off);}
+			if(rfinal_call_off == "%null%"){rfinal_call_off = 0;}else{rfinal_call_off = parseFloat(rfinal_call_off);}
+			
+			while(n_snapshot_week > n_start_week){
+				for(j=0;j<len_order_jsonData;j++){
+					temp = start_week.toString();
+					if(temp.length == 1){temp = "0" + temp;}
+					c_sw = start_year.toString() + temp;
+					p_sw = c_sw;
+					mts_data[0].push("*" + c_sw);	//snapshot calendar week
+					mts_data[1].push("Line does not exist");	//schedule line
+					mts_data[4].push("Line does not exist");	//delivery schedule date
+					mts_data[7].push("Line does not exist");	//idoc
+					mts_data[8].push("0");	//shipped qty
+					mts_data[9].push("0");	//demand qty
+					mts_data[12].push("Line does not exist");	//default delivery plant
+					if(len_order_jsonData >0){	//check if order data is available
+						mts_data[2].push(mts_mto_order_data[j][4]["value"]);	//order number
+						mts_data[3].push(mts_mto_order_data[j][3]["value"]);	//order item
+						mts_data[5].push(mts_mto_order_data[j][0]["value"]);	//ship date
+						mts_data[6].push(mts_mto_order_data[j][1]["value"]);	//dock date
+						mts_data[10].push(mts_mto_order_data[j][5]["value"]);	//final call off
+						mts_data[11].push(mts_mto_order_data[j][6]["value"]);	//review week final call off
+					}else{	//if no order data available
+						mts_data[2].push("Line does not exist");	//order number
+						mts_data[3].push("Line does not exist");	//order item
+						mts_data[5].push("Line does not exist");	//ship date
+						mts_data[6].push("Line does not exist");	//dock date
+						mts_data[10].push("0");	//final call off
+						mts_data[11].push("0");	//review week final call off
+					}
+				}
+				if(len_order_jsonData > 0){
+					mts_agg_data[0].push(len_order_jsonData);	//row_count
+					mts_agg_data[1].push(0);	//agg demand qty
+					mts_agg_data[2].push(agg_final_call_off);	//agg final call off
+					mts_agg_data[3].push(calPerVariance(0,agg_final_call_off));	//% variance
+					mts_agg_data[4].push(agg_rfinal_call_off);	//agg review week final call off
+					mts_agg_data[5].push(calPerVariance(0,agg_rfinal_call_off));	//% review week variance
+					if(p2_lower_per == -1){mts_agg_data[6].push("Not Deviated");}	//weekly decision
+					else{
+						mts_agg_data[6].push("Deviated");
+						final_dec = "Deviated";
+					}
+				}else{
+					mts_agg_data[0].push(1);	//row_count
+					mts_agg_data[1].push(0);	//agg demand qty
+					mts_agg_data[2].push(0);	//agg final call off
+					mts_agg_data[3].push(0);	//% variance
+					mts_agg_data[4].push(0);	//agg review week final call off
+					mts_agg_data[5].push(0);	//% review week variance
+					if(p2_lower_per == -1){mts_agg_data[6].push("Not Deviated");}	//weekly decision
+					else{
+						mts_agg_data[6].push("Deviated");
+						final_dec = "Deviated";
+					}
+				}
 				if(start_week == 52){start_year += 1;start_week = 1;}else{start_week += 1;}
 				n_start_week = parseInt(concoctYearWeek(start_year, start_week));
 			}
@@ -855,14 +1121,14 @@ function readMTS(jsonData){
 				temp = len_agg_data-1;
 				mts_agg_data[0][temp] += 1; //row count
 				mts_agg_data[1][temp] += demand_qty; //agg demand qty
-				if(jsonData[i][0]["value"] == p_order_no){	//if same order no. in same snapshot week, dont sum up final call off
-					//do nothing or dont sum
-				}else{
-					mts_agg_data[2][temp] += final_call_off; //agg final call off
-					mts_agg_data[4][temp] += rfinal_call_off; //agg review week final call off
-				}
-				variance_per = calPerVariance(mts_agg_data[1][temp], mts_agg_data[2][temp]);
-				rvariance_per = calPerVariance(mts_agg_data[1][temp], mts_agg_data[4][temp]);
+				// if(jsonData[i][0]["value"] == p_order_no){	//if same order no. in same snapshot week, dont sum up final call off
+					// //do nothing or dont sum
+				// }else{
+					// mts_agg_data[2][temp] += final_call_off; //agg final call off
+					// mts_agg_data[4][temp] += rfinal_call_off; //agg review week final call off
+				// }
+				variance_per = calPerVariance(mts_agg_data[1][temp], agg_final_call_off);
+				rvariance_per = calPerVariance(mts_agg_data[1][temp], agg_rfinal_call_off);
 				mts_agg_data[3][temp] = variance_per.toFixed(2); //% variance
 				mts_agg_data[5][temp] = rvariance_per.toFixed(2); //% review week variance
 				if(p1_ll_week<=week_diff && week_diff<=p1_ul_week){	//Decision
@@ -874,11 +1140,11 @@ function readMTS(jsonData){
 			}else{
 				mts_agg_data[0].push(1);	//row_count
 				mts_agg_data[1].push(demand_qty);	//agg demand qty
-				mts_agg_data[2].push(final_call_off);	//agg final call off
-				variance_per = calPerVariance(demand_qty, final_call_off);
+				mts_agg_data[2].push(agg_final_call_off);	//agg final call off
+				variance_per = calPerVariance(demand_qty, agg_final_call_off);
 				mts_agg_data[3].push(variance_per.toFixed(2));	//% variance
-				mts_agg_data[4].push(rfinal_call_off);	//agg review week final call off
-				rvariance_per = calPerVariance(demand_qty, rfinal_call_off);
+				mts_agg_data[4].push(agg_rfinal_call_off);	//agg review week final call off
+				rvariance_per = calPerVariance(demand_qty, agg_rfinal_call_off);
 				mts_agg_data[5].push(rvariance_per.toFixed(2));	//% review week variance
 				if(p1_ll_week<=week_diff && week_diff<=p1_ul_week){	//Decision
 					if(p1_lower_per<=rvariance_per && rvariance_per<=p1_upper_per){weekly_dec = "Not Deviated";}else{weekly_dec = "Deviated";}
@@ -890,50 +1156,99 @@ function readMTS(jsonData){
 			}
 			
 			mts_data[0].push(snapshot_week);	//snapshot calendar week
-			mts_data[1].push(jsonData[i][8]["value"]);	//schedule line
+			mts_data[1].push(jsonData[i][9]["value"]);	//schedule line
 			mts_data[2].push(jsonData[i][0]["value"]);	//order number
-			mts_data[3].push(jsonData[i][6]["value"]);	//order item
-			mts_data[4].push(jsonData[i][4]["value"]);	//delivery schedule date
+			mts_data[3].push(jsonData[i][7]["value"]);	//order item
+			mts_data[4].push(jsonData[i][5]["value"]);	//delivery schedule date
 			mts_data[5].push(jsonData[i][3]["value"]);	//ship date
 			mts_data[6].push(jsonData[i][1]["value"]);	//dock date
-			mts_data[7].push(jsonData[i][5]["value"]);	//idoc
-			mts_data[8].push(jsonData[i][12]["value"]);	//shipped qty
-			if(jsonData[i][14]["value"] == "%null%"){mts_data[9].push("0");}else{mts_data[9].push(jsonData[i][14]["value"]);}	//demand qty
-			if(jsonData[i][10]["value"] == "%null%"){mts_data[10].push("0");}else{mts_data[10].push(jsonData[i][10]["value"]);}	//final call off
-			if(jsonData[i][11]["value"] == "%null%"){mts_data[11].push("0");}else{mts_data[11].push(jsonData[i][11]["value"]);}	//review week final call off
+			mts_data[7].push(jsonData[i][6]["value"]);	//idoc
+			mts_data[8].push(jsonData[i][11]["value"]);	//shipped qty
+			mts_data[12].push(jsonData[i][4]["value"]);	//default delivery plant
+			if(jsonData[i][13]["value"] == "%null%"){mts_data[9].push("0");}else{mts_data[9].push(jsonData[i][13]["value"]);}	//demand qty
+			mts_data[10].push(final_call_off);	//final call off
+			// if(jsonData[i][11]["value"] == "%null%"){mts_data[11].push("0");}else{mts_data[11].push(jsonData[i][11]["value"]);}
+			mts_data[11].push(rfinal_call_off);	//review week final call off
 			p_sw = snapshot_week;
 			p_order_no = jsonData[i][0]["value"];
 		}
-		d_year = parseInt(year); d_week = parseInt(week);
-		while(n_snapshot_week > n_start_week){
-			temp = start_week.toString();
-			if(temp.length == 1){temp = "0" + temp;}
-			c_sw = start_year.toString() + temp;
-			p_sw = c_sw;
-			mts_data[0].push("*" + c_sw);	//snapshot calendar week
-			mts_data[1].push("Line does not exist");	//schedule line
-			mts_data[2].push("Line does not exist");	//order number
-			mts_data[3].push("Line does not exist");	//order item
-			mts_data[4].push("Line does not exist");	//delivery schedule date
-			mts_data[5].push("Line does not exist");	//ship date
-			mts_data[6].push("Line does not exist");	//dock date
-			mts_data[7].push("Line does not exist");	//idoc
-			mts_data[8].push("0");	//shipped qty
-			mts_data[9].push("0");	//demand qty
-			mts_data[10].push("0");	//final call off
-			mts_data[11].push("0");	//review week final call off
-			mts_agg_data[0].push(1);	//row_count
-			mts_agg_data[1].push(0);	//agg demand qty
-			mts_agg_data[2].push(0);	//agg final call off
-			mts_agg_data[3].push(0);	//% variance
-			mts_agg_data[4].push(0);	//agg review week final call off
-			mts_agg_data[5].push(0);	//% review week variance
-			if(p2_lower_per == -1){mts_agg_data[6].push("Not Deviated");}	//weekly decision
-			else{
-				mts_agg_data[6].push("Deviated");
-				final_dec = "Deviated";
+		if(flag_order_array.includes("Yes")){
+			for(j=0;j<len_order_jsonData;j++){
+				if(flag_order_array[j] == "Yes"){
+					mts_data[0].push("*"+p_sw);	//snapshot calendar week
+					mts_data[1].push("Line does not exist");	//schedule line
+					mts_data[2].push(mts_mto_order_data[j][4]["value"]);	//order number
+					mts_data[3].push(mts_mto_order_data[j][3]["value"]);	//order item
+					mts_data[4].push("Line does not exist");	//delivery schedule date
+					mts_data[5].push(mts_mto_order_data[j][0]["value"]);	//ship date
+					mts_data[6].push(mts_mto_order_data[j][1]["value"]);	//dock date
+					mts_data[7].push("Line does not exist");	//idoc
+					mts_data[8].push("0");	//shipped qty
+					mts_data[12].push("Line does not exist");	//default delivery plant
+					mts_data[9].push("0");	//demand qty
+					mts_data[10].push(mts_mto_order_data[j][5]["value"]);	//final call off
+					mts_data[11].push(mts_mto_order_data[j][6]["value"]);	//review week final call off
+					mts_agg_data[0][mts_agg_data[0].length-1] += 1; 
+				}
 			}
-			
+		}
+		d_year = parseInt(year); d_week = parseInt(week);
+		if(d_week == 1){dweek = 52; d_year = d_year - 1;}else{d_week = d_week - 1;}
+		n_snapshot_week = parseInt(concoctYearWeek(d_year,d_week));
+		while(n_snapshot_week > n_start_week){
+			for(i=0;i<len_order_jsonData;i++){
+				temp = start_week.toString();
+				if(temp.length == 1){temp = "0" + temp;}
+				c_sw = start_year.toString() + temp;
+				p_sw = c_sw;
+				mts_data[0].push("*" + c_sw);	//snapshot calendar week
+				mts_data[1].push("Line does not exist");	//schedule line
+				mts_data[4].push("Line does not exist");	//delivery schedule date
+				mts_data[7].push("Line does not exist");	//idoc
+				mts_data[8].push("0");	//shipped qty
+				mts_data[9].push("0");	//demand qty
+				mts_data[12].push("Line does not exist");	//default delivery plant
+				if(len_order_jsonData >0){	//check if order data is available
+					mts_data[2].push(mts_mto_order_data[i][4]["value"]);	//order number
+					mts_data[3].push(mts_mto_order_data[i][3]["value"]);	//order item
+					mts_data[5].push(mts_mto_order_data[i][0]["value"]);	//ship date
+					mts_data[6].push(mts_mto_order_data[i][1]["value"]);	//dock date
+					mts_data[10].push(mts_mto_order_data[i][5]["value"]);	//final call off
+					mts_data[11].push(mts_mto_order_data[i][6]["value"]);	//review week final call off
+				}else{	//if no order data available
+					mts_data[2].push("Line does not exist");	//order number
+					mts_data[3].push("Line does not exist");	//order item
+					mts_data[5].push("Line does not exist");	//ship date
+					mts_data[6].push("Line does not exist");	//dock date
+					mts_data[10].push("0");	//final call off
+					mts_data[11].push("0");	//review week final call off
+				}
+			}
+			if(len_order_jsonData > 0){
+				mts_agg_data[0].push(len_order_jsonData);	//row_count
+				mts_agg_data[1].push(0);	//agg demand qty
+				mts_agg_data[2].push(agg_final_call_off);	//agg final call off
+				mts_agg_data[3].push(calPerVariance(0,agg_final_call_off));	//% variance
+				mts_agg_data[4].push(agg_rfinal_call_off);	//agg review week final call off
+				mts_agg_data[5].push(calPerVariance(0,agg_rfinal_call_off));	//% review week variance
+				if(p2_lower_per == -1){mts_agg_data[6].push("Not Deviated");}	//weekly decision
+				else{
+					mts_agg_data[6].push("Deviated");
+					final_dec = "Deviated";
+				}
+			}else{
+				mts_agg_data[0].push(1);	//row_count
+				mts_agg_data[1].push(0);	//agg demand qty
+				mts_agg_data[2].push(0);	//agg final call off
+				mts_agg_data[3].push(0);	//% variance
+				mts_agg_data[4].push(0);	//agg review week final call off
+				mts_agg_data[5].push(0);	//% review week variance
+				if(p2_lower_per == -1){mts_agg_data[6].push("Not Deviated");}	//weekly decision
+				else{
+					mts_agg_data[6].push("Deviated");
+					final_dec = "Deviated";
+				}
+			}
 			if(start_week == 52){start_year += 1;start_week = 1;}else{start_week += 1;}
 			n_start_week = parseInt(concoctYearWeek(start_year, start_week));
 		}
@@ -947,10 +1262,31 @@ function readMTS(jsonData){
 	document.getElementById("period").innerHTML = period_str;
 	oth_pdf[1] = "Frozen Zone : " + p1_ul_week.toString() + " Week/s (" + (p1_lower_per*100).toString()+ "% - " + (p1_upper_per*100).toString() + "%) Flex Zone : " + (p2_ul_week-p1_ul_week).toString() + " Week/s (" + (p2_lower_per*100).toString() + "% - "+ (p2_upper_per*100).toString() + "%)";
 	finalLogicTwo(mts_data,mts_agg_data,final_dec);
+	}catch(e){
+		console.log(e);
+	}
 }
 
 function initMTO(){
-	flowNum=22;
+	flowNum=221;
+	var options={
+		"RLT Weeks": rlt_week,
+		"Year": year,
+		"Week": week
+	},
+	newOptions = setOptions(), keyName;
+	for (keyName in newOptions){options[keyName]=newOptions[keyName];}
+	options["Customer Request Ship Calendar Week Number"] = year + week;
+	selectViz("vizContainer3", "MTS-FinalCallOff", options);
+}
+
+function readMTOOrder(jsonData){
+	mts_mto_order_data = jsonData;
+	getMTODemand();
+}
+
+function getMTODemand(){
+	flowNum=222;
 	var options={
 		"RLT Weeks": rlt_week,
 		"Year": year,
@@ -959,13 +1295,22 @@ function initMTO(){
 	newOptions = setOptions(), keyName;
 	for (keyName in newOptions){options[keyName]=newOptions[keyName];}
 	options["Customer Request Ship Calendar Week"] = year + week;
-	selectViz("vizContainer3", "MTO", options);
+	selectViz("vizContainer4", "MTO-Demand", options);
 }
 
-function readMTO(jsonData){
-	var len_jsonData = jsonData.length, len_agg_data,
-	i, mto_data=[[],[],[],[],[],[],[],[],[],[],[],[]], mto_agg_data=[[],[],[],[],[],[],[]], row_count = 0, snapshot_week, variance_per, rvariance_per, weekly_dec, final_dec = "Not Deviated", demand_qty = 0, final_call_off = 0, rfinal_call_off = 0, week_diff, i_doc, period_str,
-	s_year = parseInt(year), s_week = parseInt(week), start_year, start_week, d_year, d_week, c_sw, p_sw, p_order_no, temp, n_snapshot_week, n_start_week;
+function readMTODemand(jsonData){
+	try{
+	var len_jsonData = jsonData.length, len_agg_data, len_order_jsonData=mts_mto_order_data.length,
+	i, j, mto_data=[[],[],[],[],[],[],[],[],[],[],[],[],[]], mto_agg_data=[[],[],[],[],[],[],[]], flag_order_array=[], row_count = 0, snapshot_week, variance_per, rvariance_per, weekly_dec, final_dec = "Not Deviated", demand_qty = 0, final_call_off = 0, rfinal_call_off = 0, week_diff, i_doc, period_str,
+	s_year = parseInt(year), s_week = parseInt(week), start_year, start_week, d_year, d_week, c_sw, p_sw, p_order_no, temp, n_snapshot_week, n_start_week,
+	d_order_no, o_order_no, d_order_item, o_order_item, d_ship_date, o_ship_date, agg_final_call_off=0, agg_rfinal_call_off=0;
+	
+	//populate flag_order_array with default 'Yes', number equal to number of records retrieved in order request
+	for(i=0;i<len_order_jsonData;i++){
+		flag_order_array.push("Yes");
+		agg_final_call_off += parseInt(mts_mto_order_data[i][5]["value"]);
+		agg_rfinal_call_off += parseInt(mts_mto_order_data[i][6]["value"]);
+	}
 	
 	if(s_week-rlt_week <= 0){
 		start_year = s_year-1;
@@ -983,77 +1328,177 @@ function readMTO(jsonData){
 		d_year = s_year; d_week = s_week;
 		n_start_week = parseInt(concoctYearWeek(start_year, start_week));
 		while(n_snapshot_week > n_start_week){
-			temp = start_week.toString();
-			if(temp.length == 1){temp = "0" + temp;}
-			c_sw = start_year.toString() + temp;
-			p_sw = c_sw;
-			mto_data[0].push("*" + c_sw);	//snapshot calendar week
-			mto_data[1].push("Line does not exist");	//schedule line
-			mto_data[2].push("Line does not exist");	//order number
-			mto_data[3].push("Line does not exist");	//order item
-			mto_data[4].push("Line does not exist");	//delivery schedule date
-			mto_data[5].push("Line does not exist");	//ship date
-			mto_data[6].push("Line does not exist");	//dock date
-			mto_data[7].push("Line does not exist");	//idoc
-			mto_data[8].push("0");	//shipped qty
-			mto_data[9].push("0");	//demand qty
-			mto_data[10].push("0");	//final call off
-			mto_data[11].push("0");	//review week final call off
-			mto_agg_data[0].push(1);	//row_count
-			mto_agg_data[1].push(0);	//agg demand qty
-			mto_agg_data[2].push(0);	//agg final call off
-			mto_agg_data[3].push(0);	//% variance
-			mto_agg_data[4].push(0);	//agg review week final call off
-			mto_agg_data[5].push(0);	//% review week variance
-			mto_agg_data[6].push("Deviated");	//weekly decision
-			
-			if(start_week == 52){start_year += 1;start_week = 1;}else{start_week += 1;}
-			n_start_week = parseInt(concoctYearWeek(start_year, start_week));
-			final_dec = "Deviated";
-		}
-	}else{
-		for(i=0;i<len_jsonData;i++){
-			n_start_week = parseInt(concoctYearWeek(start_year, start_week));
-			len_agg_data = mto_agg_data[0].length;
-			snapshot_week = jsonData[i][9]["value"];
-			n_snapshot_week = parseInt(snapshot_week);
-			d_year = parseInt(snapshot_week.substring(0,4));
-			d_week = parseInt(snapshot_week.substring(4,6));
-			week_diff = parseInt(jsonData[i][7]["value"]);
-			demand_qty = jsonData[i][14]["value"];
-			if(demand_qty == "%null%"){demand_qty = 0;}else{demand_qty = parseFloat(demand_qty);}
-			final_call_off = jsonData[i][10]["value"];
-			if(final_call_off == "%null%"){final_call_off = 0;}else{final_call_off = parseFloat(final_call_off);}
-			rfinal_call_off = jsonData[i][11]["value"];
-			if(rfinal_call_off == "%null%"){rfinal_call_off = 0;}else{rfinal_call_off = parseFloat(rfinal_call_off);}
-			
-			while(n_snapshot_week > n_start_week){
+			for(i=0;i<len_order_jsonData;i++){
 				temp = start_week.toString();
 				if(temp.length == 1){temp = "0" + temp;}
 				c_sw = start_year.toString() + temp;
 				p_sw = c_sw;
 				mto_data[0].push("*" + c_sw);	//snapshot calendar week
 				mto_data[1].push("Line does not exist");	//schedule line
-				mto_data[2].push("Line does not exist");	//order number
-				mto_data[3].push("Line does not exist");	//order item
 				mto_data[4].push("Line does not exist");	//delivery schedule date
-				mto_data[5].push("Line does not exist");	//ship date
-				mto_data[6].push("Line does not exist");	//dock date
 				mto_data[7].push("Line does not exist");	//idoc
 				mto_data[8].push("0");	//shipped qty
 				mto_data[9].push("0");	//demand qty
-				mto_data[10].push("0");	//final call off
-				mto_data[11].push("0");	//review week final call off
+				mto_data[12].push("Line does not exist");	//default delivery plant
+				if(len_order_jsonData > 0){	//check if order data is available
+					mto_data[2].push(mts_mto_order_data[i][4]["value"]);	//order number
+					mto_data[3].push(mts_mto_order_data[i][3]["value"]);	//order item
+					mto_data[5].push(mts_mto_order_data[i][0]["value"]);	//ship date
+					mto_data[6].push(mts_mto_order_data[i][1]["value"]);	//dock date
+					mto_data[10].push(mts_mto_order_data[i][5]["value"]);	//final call off
+					mto_data[11].push(mts_mto_order_data[i][6]["value"]);	//review week final call off
+				}else{	//if no order data available
+					mto_data[2].push("Line does not exist");	//order number
+					mto_data[3].push("Line does not exist");	//order item
+					mto_data[5].push("Line does not exist");	//ship date
+					mto_data[6].push("Line does not exist");	//dock date
+					mto_data[10].push("0");	//final call off
+					mto_data[11].push("0");	//review week final call off
+				}
+			}
+			if(len_order_jsonData > 0){
+				mto_agg_data[0].push(len_order_jsonData);	//row_count
+				mto_agg_data[1].push(0);	//agg demand qty
+				mto_agg_data[2].push(agg_final_call_off);	//agg final call off
+				mto_agg_data[3].push(calPerVariance(0,agg_final_call_off));	//% variance
+				mto_agg_data[4].push(agg_rfinal_call_off);	//agg review week final call off
+				mto_agg_data[5].push(calPerVariance(0,agg_rfinal_call_off));	//% review week variance
+				if(p2_lower_per == -1){mto_agg_data[6].push("Not Deviated");}	//weekly decision
+				else{
+					mto_agg_data[6].push("Deviated");
+					final_dec = "Deviated";
+				}
+			}else{
 				mto_agg_data[0].push(1);	//row_count
 				mto_agg_data[1].push(0);	//agg demand qty
 				mto_agg_data[2].push(0);	//agg final call off
 				mto_agg_data[3].push(0);	//% variance
 				mto_agg_data[4].push(0);	//agg review week final call off
 				mto_agg_data[5].push(0);	//% review week variance
-				mto_agg_data[6].push("Deviated");	//weekly decision
+				if(p2_lower_per == -1){mto_agg_data[6].push("Not Deviated");}	//weekly decision
+				else{
+					mto_agg_data[6].push("Deviated");
+					final_dec = "Deviated";
+				}
+			}
+			if(start_week == 52){start_year += 1;start_week = 1;}else{start_week += 1;}
+			n_start_week = parseInt(concoctYearWeek(start_year, start_week));
+		}
+	}else{
+		for(i=0;i<len_jsonData;i++){
+			snapshot_week = jsonData[i][10]["value"]; //moved here to make sure that the condition to compare previous and current snapshots
+			if(i==0){p_sw = snapshot_week;}	//init p_sw with first snapshot_week
+			if(snapshot_week != p_sw){	//check and create data for demand if order data is available
+				if(flag_order_array.includes("Yes")){
+					for(j=0;j<len_order_jsonData;j++){
+						if(flag_order_array[j] == "Yes"){
+							mto_data[0].push("*"+p_sw);	//snapshot calendar week
+							mto_data[1].push("Line does not exist");	//schedule line
+							mto_data[2].push(mts_mto_order_data[j][4]["value"]);	//order number
+							mto_data[3].push(mts_mto_order_data[j][3]["value"]);	//order item
+							mto_data[4].push("Line does not exist");	//delivery schedule date
+							mto_data[5].push(mts_mto_order_data[j][0]["value"]);	//ship date
+							mto_data[6].push(mts_mto_order_data[j][1]["value"]);	//dock date
+							mto_data[7].push("Line does not exist");	//idoc
+							mto_data[8].push("0");	//shipped qty
+							mto_data[12].push("Line does not exist");	//default delivery plant
+							mto_data[9].push("0");	//demand qty
+							mto_data[10].push(mts_mto_order_data[j][5]["value"]);	//final call off
+							mto_data[11].push(mts_mto_order_data[j][6]["value"]);	//review week final call off
+							mto_agg_data[0][mto_agg_data[0].length-1] += 1; 
+						}
+						flag_order_array[j] = "Yes";	//reset flag_order_array values
+					}
+				}
+			}else{
+				
+			}
+			n_start_week = parseInt(concoctYearWeek(start_year, start_week));
+			len_agg_data = mto_agg_data[0].length;
+			n_snapshot_week = parseInt(snapshot_week);
+			d_year = parseInt(snapshot_week.substring(0,4));
+			d_week = parseInt(snapshot_week.substring(4,6));
+			week_diff = parseInt(jsonData[i][8]["value"]);
+			demand_qty = jsonData[i][13]["value"];
+			if(demand_qty == "%null%"){demand_qty = 0;}else{demand_qty = parseFloat(demand_qty);}
+			d_order_no = jsonData[i][0]["value"];
+			d_order_item = jsonData[i][7]["value"];
+			d_ship_date = jsonData[i][3]["value"];
+			
+			for(j=0;j<len_order_jsonData;j++){
+				o_order_no = mts_mto_order_data[j][4]["value"];
+				o_order_item = mts_mto_order_data[j][3]["value"];
+				o_ship_date = mts_mto_order_data[j][0]["value"];
+				if(d_order_no == o_order_no && d_order_item == o_order_item && d_ship_date == o_ship_date){// blend check between demand and order for fields order no, order item no and ship date
+					flag_order_array[j] = "No";
+					final_call_off = mts_mto_order_data[j][5]["value"];
+					rfinal_call_off = mts_mto_order_data[j][6]["value"];
+					break;
+				}else{
+					final_call_off = 0;
+					rfinal_call_off = 0;
+				}
+			}
+			
+			if(final_call_off == "%null%"){final_call_off = 0;}else{final_call_off = parseFloat(final_call_off);}
+			if(rfinal_call_off == "%null%"){rfinal_call_off = 0;}else{rfinal_call_off = parseFloat(rfinal_call_off);}
+			
+			while(n_snapshot_week > n_start_week){
+				for(j=0;j<len_order_jsonData;j++){
+					temp = start_week.toString();
+					if(temp.length == 1){temp = "0" + temp;}
+					c_sw = start_year.toString() + temp;
+					p_sw = c_sw;
+					mto_data[0].push("*" + c_sw);	//snapshot calendar week
+					mto_data[1].push("Line does not exist");	//schedule line
+					mto_data[4].push("Line does not exist");	//delivery schedule date
+					mto_data[7].push("Line does not exist");	//idoc
+					mto_data[8].push("0");	//shipped qty
+					mto_data[9].push("0");	//demand qty
+					mto_data[12].push("Line does not exist");	//default delivery plant
+					if(len_order_jsonData > 0){	//check if order data is available
+						mto_data[2].push(mts_mto_order_data[j][4]["value"]);	//order number
+						mto_data[3].push(mts_mto_order_data[j][3]["value"]);	//order item
+						mto_data[5].push(mts_mto_order_data[j][0]["value"]);	//ship date
+						mto_data[6].push(mts_mto_order_data[j][1]["value"]);	//dock date
+						mto_data[10].push(mts_mto_order_data[j][5]["value"]);	//final call off
+						mto_data[11].push(mts_mto_order_data[j][6]["value"]);	//review week final call off
+					}else{	//if no order data available
+						mto_data[2].push("Line does not exist");	//order number
+						mto_data[3].push("Line does not exist");	//order item
+						mto_data[5].push("Line does not exist");	//ship date
+						mto_data[6].push("Line does not exist");	//dock date
+						mto_data[10].push("0");	//final call off
+						mto_data[11].push("0");	//review week final call off
+					}
+				}
+				if(len_order_jsonData > 0){
+					mto_agg_data[0].push(len_order_jsonData);	//row_count
+					mto_agg_data[1].push(0);	//agg demand qty
+					mto_agg_data[2].push(agg_final_call_off);	//agg final call off
+					mto_agg_data[3].push(calPerVariance(0,agg_final_call_off));	//% variance
+					mto_agg_data[4].push(agg_rfinal_call_off);	//agg review week final call off
+					mto_agg_data[5].push(calPerVariance(0,agg_rfinal_call_off));	//% review week variance
+					if(p2_lower_per == -1){mto_agg_data[6].push("Not Deviated");}	//weekly decision
+					else{
+						mto_agg_data[6].push("Deviated");
+						final_dec = "Deviated";
+					}
+				}else{
+					mto_agg_data[0].push(1);	//row_count
+					mto_agg_data[1].push(0);	//agg demand qty
+					mto_agg_data[2].push(0);	//agg final call off
+					mto_agg_data[3].push(0);	//% variance
+					mto_agg_data[4].push(0);	//agg review week final call off
+					mto_agg_data[5].push(0);	//% review week variance
+					if(p2_lower_per == -1){mto_agg_data[6].push("Not Deviated");}	//weekly decision
+					else{
+						mto_agg_data[6].push("Deviated");
+						final_dec = "Deviated";
+					}
+				}
 				if(start_week == 52){start_year += 1;start_week = 1;}else{start_week += 1;}
 				n_start_week = parseInt(concoctYearWeek(start_year, start_week));
-				final_dec = "Deviated";
 			}
 			
 			if(year == snapshot_week.substring(0,4) && week == snapshot_week.substring(4,6)){break;}
@@ -1061,26 +1506,26 @@ function readMTO(jsonData){
 				temp = len_agg_data-1;
 				mto_agg_data[0][temp] += 1; //row count
 				mto_agg_data[1][temp] += demand_qty; //agg demand qty
-				if(jsonData[i][0]["value"] == p_order_no){	//if same order no. in same snapshot week, dont sum up final call off
-					//do nothing or dont sum
-				}else{
-					mto_agg_data[2][temp] += final_call_off; //agg final call off
-					mto_agg_data[4][temp] += rfinal_call_off; //agg review week final call off
-				}
-				variance_per = calPerVariance(mto_agg_data[1][temp], mto_agg_data[2][temp]);
+				// if(jsonData[i][0]["value"] == p_order_no){	//if same order no. in same snapshot week, dont sum up final call off
+					// //do nothing or dont sum
+				// }else{
+					// mto_agg_data[2][temp] += final_call_off; //agg final call off
+					// mto_agg_data[4][temp] += rfinal_call_off; //agg review week final call off
+				// }
+				variance_per = calPerVariance(mto_agg_data[1][temp], agg_final_call_off);
 				mto_agg_data[3][temp] = variance_per.toFixed(2); //% variance
-				rvariance_per = calPerVariance(mto_agg_data[1][temp], mto_agg_data[4][temp]);
+				rvariance_per = calPerVariance(mto_agg_data[1][temp], agg_rfinal_call_off);
 				mto_agg_data[5][temp] = rvariance_per.toFixed(2); //% review week variance
 				if(rvariance_per==0){weekly_dec = "Not Deviated";}else{weekly_dec = "Deviated";}
 				mto_agg_data[6][temp] = weekly_dec;	//weekly decision
 			}else{
 				mto_agg_data[0].push(1);	//row_count
 				mto_agg_data[1].push(demand_qty);	//agg demand qty
-				mto_agg_data[2].push(final_call_off);	//agg final call off
-				variance_per = calPerVariance(demand_qty, final_call_off);
+				mto_agg_data[2].push(agg_final_call_off);	//agg final call off
+				variance_per = calPerVariance(demand_qty, agg_final_call_off);
 				mto_agg_data[3].push(variance_per.toFixed(2));	//% variance
-				mto_agg_data[4].push(rfinal_call_off);	//agg review week final call off
-				rvariance_per = calPerVariance(demand_qty, rfinal_call_off);
+				mto_agg_data[4].push(agg_rfinal_call_off);	//agg review week final call off
+				rvariance_per = calPerVariance(demand_qty, agg_rfinal_call_off);
 				mto_agg_data[5].push(rvariance_per.toFixed(2));	//% review week variance
 				if(rvariance_per==0){weekly_dec = "Not Deviated";}else{weekly_dec = "Deviated";}
 				mto_agg_data[6].push(weekly_dec);	//weekly decision
@@ -1088,50 +1533,102 @@ function readMTO(jsonData){
 			}
 
 			mto_data[0].push(snapshot_week);	//snapshot calendar week
-			mto_data[1].push(jsonData[i][8]["value"]);	//schedule line
+			mto_data[1].push(jsonData[i][9]["value"]);	//schedule line
 			mto_data[2].push(jsonData[i][0]["value"]);	//order number
-			mto_data[3].push(jsonData[i][6]["value"]);	//order item
-			mto_data[4].push(jsonData[i][4]["value"]);	//delivery schedule date
+			mto_data[3].push(jsonData[i][7]["value"]);	//order item
+			mto_data[4].push(jsonData[i][5]["value"]);	//delivery schedule date
 			mto_data[5].push(jsonData[i][3]["value"]);	//ship date
 			mto_data[6].push(jsonData[i][1]["value"]);	//dock date
-			mto_data[7].push(jsonData[i][5]["value"]);	//idoc
-			mto_data[8].push(jsonData[i][12]["value"]);	//shipped qty
-			if(jsonData[i][14]["value"] == "%null%"){mto_data[9].push("0");}else{mto_data[9].push(jsonData[i][14]["value"]);}	//demand qty
-			if(jsonData[i][10]["value"] == "%null%"){mto_data[10].push("0");}else{mto_data[10].push(jsonData[i][10]["value"]);}	//final call off
-			if(jsonData[i][11]["value"] == "%null%"){mto_data[11].push("0");}else{mto_data[11].push(jsonData[i][11]["value"]);}	//review week final call off
+			mto_data[7].push(jsonData[i][6]["value"]);	//idoc
+			mto_data[8].push(jsonData[i][11]["value"]);	//shipped qty
+			mto_data[12].push(jsonData[i][4]["value"]);	//default delivery plant
+			if(jsonData[i][13]["value"] == "%null%"){mto_data[9].push("0");}else{mto_data[9].push(jsonData[i][13]["value"]);}	//demand qty
+			mto_data[10].push(final_call_off);	//final call off
+			mto_data[11].push(rfinal_call_off);	//review week final call off
 			p_sw = snapshot_week;
 			p_order_no = jsonData[i][0]["value"];
 			
 		}
+		if(flag_order_array.includes("Yes")){
+			for(j=0;j<len_order_jsonData;j++){
+				if(flag_order_array[j] == "Yes"){
+					mto_data[0].push("*"+p_sw);	//snapshot calendar week
+					mto_data[1].push("Line does not exist");	//schedule line
+					mto_data[2].push(mts_mto_order_data[j][4]["value"]);	//order number
+					mto_data[3].push(mts_mto_order_data[j][3]["value"]);	//order item
+					mto_data[4].push("Line does not exist");	//delivery schedule date
+					mto_data[5].push(mts_mto_order_data[j][0]["value"]);	//ship date
+					mto_data[6].push(mts_mto_order_data[j][1]["value"]);	//dock date
+					mto_data[7].push("Line does not exist");	//idoc
+					mto_data[8].push("0");	//shipped qty
+					mto_data[12].push("Line does not exist");	//default delivery plant
+					mto_data[9].push("0");	//demand qty
+					mto_data[10].push(mts_mto_order_data[j][5]["value"]);	//final call off
+					mto_data[11].push(mts_mto_order_data[j][6]["value"]);	//review week final call off
+					mto_agg_data[0][mto_agg_data[0].length-1] += 1; 
+				}
+			}
+		}
+		
 		d_year = parseInt(year); d_week = parseInt(week);
+		if(d_week == 1){dweek = 52; d_year = d_year - 1;}else{d_week = d_week - 1;}
+		n_snapshot_week = parseInt(concoctYearWeek(d_year,d_week));
 		while(n_snapshot_week > n_start_week){
-			temp = start_week.toString();
-			if(temp.length == 1){temp = "0" + temp;}
-			c_sw = start_year.toString() + temp;
-			p_sw = c_sw;
-			mto_data[0].push("*" + c_sw);	//snapshot calendar week
-			mto_data[1].push("Line does not exist");	//schedule line
-			mto_data[2].push("Line does not exist");	//order number
-			mto_data[3].push("Line does not exist");	//order item
-			mto_data[4].push("Line does not exist");	//delivery schedule date
-			mto_data[5].push("Line does not exist");	//ship date
-			mto_data[6].push("Line does not exist");	//dock date
-			mto_data[7].push("Line does not exist");	//idoc
-			mto_data[8].push("0");	//shipped qty
-			mto_data[9].push("0");	//demand qty
-			mto_data[10].push("0");	//final call off
-			mto_data[11].push("0");	//review week final call off
-			mto_agg_data[0].push(1);	//row_count
-			mto_agg_data[1].push(0);	//agg demand qty
-			mto_agg_data[2].push(0);	//agg final call off
-			mto_agg_data[3].push(0);	//% variance
-			mto_agg_data[4].push(0);	//agg review week final call off
-			mto_agg_data[5].push(0);	//% review week variance
-			mto_agg_data[6].push("Deviated");	//weekly decision
-			
-			if(start_week == 52){start_year += 1;start_week = 1;}else{start_week += 1;}
-			n_start_week = parseInt(concoctYearWeek(start_year, start_week));
-			final_dec = "Deviated";
+			for(i=0;i<len_order_jsonData;i++){
+					temp = start_week.toString();
+					if(temp.length == 1){temp = "0" + temp;}
+					c_sw = start_year.toString() + temp;
+					p_sw = c_sw;
+					mto_data[0].push("*" + c_sw);	//snapshot calendar week
+					mto_data[1].push("Line does not exist");	//schedule line
+					mto_data[4].push("Line does not exist");	//delivery schedule date
+					mto_data[7].push("Line does not exist");	//idoc
+					mto_data[8].push("0");	//shipped qty
+					mto_data[9].push("0");	//demand qty
+					mto_data[12].push("Line does not exist");	//default delivery plant
+					if(len_order_jsonData > 0){	//check if order data is available
+						mto_data[2].push(mts_mto_order_data[i][4]["value"]);	//order number
+						mto_data[3].push(mts_mto_order_data[i][3]["value"]);	//order item
+						mto_data[5].push(mts_mto_order_data[i][0]["value"]);	//ship date
+						mto_data[6].push(mts_mto_order_data[i][1]["value"]);	//dock date
+						mto_data[10].push(mts_mto_order_data[i][5]["value"]);	//final call off
+						mto_data[11].push(mts_mto_order_data[i][6]["value"]);	//review week final call off
+					}else{	//if no order data available
+						mto_data[2].push("Line does not exist");	//order number
+						mto_data[3].push("Line does not exist");	//order item
+						mto_data[5].push("Line does not exist");	//ship date
+						mto_data[6].push("Line does not exist");	//dock date
+						mto_data[10].push("0");	//final call off
+						mto_data[11].push("0");	//review week final call off
+					}
+				}
+				if(len_order_jsonData > 0){
+					mto_agg_data[0].push(len_order_jsonData);	//row_count
+					mto_agg_data[1].push(0);	//agg demand qty
+					mto_agg_data[2].push(agg_final_call_off);	//agg final call off
+					mto_agg_data[3].push(calPerVariance(0,agg_final_call_off));	//% variance
+					mto_agg_data[4].push(agg_rfinal_call_off);	//agg review week final call off
+					mto_agg_data[5].push(calPerVariance(0,agg_rfinal_call_off));	//% review week variance
+					if(p2_lower_per == -1){mto_agg_data[6].push("Not Deviated");}	//weekly decision
+					else{
+						mto_agg_data[6].push("Deviated");
+						final_dec = "Deviated";
+					}
+				}else{
+					mto_agg_data[0].push(1);	//row_count
+					mto_agg_data[1].push(0);	//agg demand qty
+					mto_agg_data[2].push(0);	//agg final call off
+					mto_agg_data[3].push(0);	//% variance
+					mto_agg_data[4].push(0);	//agg review week final call off
+					mto_agg_data[5].push(0);	//% review week variance
+					if(p2_lower_per == -1){mto_agg_data[6].push("Not Deviated");}	//weekly decision
+					else{
+						mto_agg_data[6].push("Deviated");
+						final_dec = "Deviated";
+					}
+				}
+				if(start_week == 52){start_year += 1;start_week = 1;}else{start_week += 1;}
+				n_start_week = parseInt(concoctYearWeek(start_year, start_week));
 		}
 	}
 	temp = mto_agg_data[6].length;
@@ -1153,6 +1650,7 @@ function readMTO(jsonData){
 		period_str += rlt_week.toString()+' Weeks</span>';
 		oth_pdf[1] = "Replenishment Lead Time : " + rlt_week.toString() + " Week";
 	}
+	}catch(e){console.log(e);}
 	document.getElementById("period").innerHTML = period_str;
 	finalLogicTwo(mto_data,mto_agg_data,final_dec);
 }
@@ -1160,8 +1658,8 @@ function readMTO(jsonData){
 function finalLogicTwo(logicTwoData,logicTwoAggData,final_dec){
 	var len_data = logicTwoData[0].length,
 	i, str_table, ele_handle, iter=0, j=0, temp, temp_pdf=[], f_temp_pdf=[];
-	str_table = '<table><tr align="center"><th>Snapshot Calendar Week</th><th>Schedule Line</th><th>Order #</th><th>Order Item #</th><th>Delivery Schedule Date</th><th>Ship Date</th><th>Dock Date</th><th>IDOC Number</th><th>Shipped Quantity</th><th>Demand Quantity</th><th>Final CallOff</th><th>Review Week Final CallOff</th><th>Total Demand Quantity</th><th>Total Final CallOff</th><th>% Variance</th><th>Total Review Week Final CallOff</th><th>% Review Week Variance</th><th>Status</th></tr>';
-	stf_data_pdf.push(["Snapshot Calendar Week","Schedule Line","Order #","Order Item #","Delivery Schedule Date","Ship Date","Dock Date","IDOC Number","Shipped Quantity","Demand Quantity","Final CallOff","Review Week Final CallOff","Total Demand Quantity","Total Final CallOff","% Variance","Total Review Week Final CallOff","% Review Week Variance","Status"]);
+	str_table = '<table><tr align="center"><th>Snapshot Calendar Week</th><th>Schedule Line</th><th>Order #</th><th>Order Item #</th><th>Default Delivery Plant</th><th>Delivery Schedule Date</th><th>Ship Date</th><th>Dock Date</th><th>IDOC Number</th><th>Shipped Quantity</th><th>Demand Quantity</th><th>Final CallOff</th><th>Review Week Final CallOff</th><th>Total Demand Quantity</th><th>Total Final CallOff</th><th>% Variance</th><th>Total Review Week Final CallOff</th><th>% Review Week Variance</th><th>Status</th></tr>';
+	stf_data_pdf.push(["Snapshot Calendar Week","Schedule Line","Order #","Order Item #","Default Delivery Plant","Delivery Schedule Date","Ship Date","Dock Date","IDOC Number","Shipped Quantity","Demand Quantity","Final CallOff","Review Week Final CallOff","Total Demand Quantity","Total Final CallOff","% Variance","Total Review Week Final CallOff","% Review Week Variance","Status"]);
 	for(i=0;i<len_data;i++){
 		temp = logicTwoData[0][i];
 		str_table += '<tr align="center"';
@@ -1170,8 +1668,8 @@ function finalLogicTwo(logicTwoData,logicTwoAggData,final_dec){
 		}else{
 			str_table += '>';
 		}
-		str_table += '<td>'+logicTwoData[0][i]+'</td><td>'+logicTwoData[1][i]+'</td><td>'+logicTwoData[2][i]+'</td><td>'+logicTwoData[3][i]+'</td><td>'+logicTwoData[4][i].toString()+'</td><td>'+logicTwoData[5][i]+'</td><td>'+logicTwoData[6][i]+'</td><td>'+logicTwoData[7][i]+'</td><td>'+Math.round(parseFloat(logicTwoData[8][i])).toLocaleString('en')+'</td><td>'+Math.round(parseFloat(logicTwoData[9][i])).toLocaleString('en')+'</td><td>'+Math.round(parseFloat(logicTwoData[10][i])).toLocaleString('en')+'</td><td>'+Math.round(parseFloat(logicTwoData[11][i])).toLocaleString('en')+'</td>';
-		temp_pdf.push(logicTwoData[0][i],logicTwoData[1][i],logicTwoData[2][i],logicTwoData[3][i],logicTwoData[4][i],logicTwoData[5][i],logicTwoData[6][i],logicTwoData[7][i],Math.round(parseFloat(logicTwoData[8][i])).toLocaleString('en'),Math.round(parseFloat(logicTwoData[9][i])).toLocaleString('en'),Math.round(parseFloat(logicTwoData[10][i])).toLocaleString('en'),Math.round(parseFloat(logicTwoData[11][i])).toLocaleString('en'));
+		str_table += '<td>'+logicTwoData[0][i]+'</td><td>'+logicTwoData[1][i]+'</td><td>'+logicTwoData[2][i]+'</td><td>'+logicTwoData[3][i]+'</td><td>'+logicTwoData[12][i]+'</td><td>'+logicTwoData[4][i].toString()+'</td><td>'+logicTwoData[5][i]+'</td><td>'+logicTwoData[6][i]+'</td><td>'+logicTwoData[7][i]+'</td><td>'+Math.round(parseFloat(logicTwoData[8][i])).toLocaleString('en')+'</td><td>'+Math.round(parseFloat(logicTwoData[9][i])).toLocaleString('en')+'</td><td>'+Math.round(parseFloat(logicTwoData[10][i])).toLocaleString('en')+'</td><td>'+Math.round(parseFloat(logicTwoData[11][i])).toLocaleString('en')+'</td>';
+		temp_pdf.push(logicTwoData[0][i],logicTwoData[1][i],logicTwoData[2][i],logicTwoData[3][i],logicTwoData[12][i],logicTwoData[4][i],logicTwoData[5][i],logicTwoData[6][i],logicTwoData[7][i],Math.round(parseFloat(logicTwoData[8][i])).toLocaleString('en'),Math.round(parseFloat(logicTwoData[9][i])).toLocaleString('en'),Math.round(parseFloat(logicTwoData[10][i])).toLocaleString('en'),Math.round(parseFloat(logicTwoData[11][i])).toLocaleString('en'));
 		temp = logicTwoAggData[0][j];
 		temp_pdf.push(Math.round(parseFloat(logicTwoAggData[1][j])).toLocaleString('en'), Math.round(parseFloat(logicTwoAggData[2][j])).toLocaleString('en'), Math.round(logicTwoAggData[3][j]*100).toString()+' %', Math.round(parseFloat(logicTwoAggData[4][j])).toLocaleString('en'), Math.round(logicTwoAggData[5][j]*100).toString()+' %', logicTwoAggData[6][j]);
 		if(iter == 0){
@@ -1206,10 +1704,14 @@ function finalLogicTwo(logicTwoData,logicTwoAggData,final_dec){
 	str_table += '</table>';
 	stf_data_pdf.push(f_temp_pdf);
 	if(final_dec == "Deviated"){
-		document.getElementById("logic2_dvt").src = "./images/no.png";
+		// document.getElementById("logic2_dvt").src = "./images/no.png";
+		fillData("dvt2_status", "no", " Deviated");
+
 		contract_details_pdf[5] = ["Short Term Forecast", ": Customer Deviated"];
 	}else if(final_dec == "Not Deviated"){
-		document.getElementById("logic2_not_dvt").src = "./images/yes.png";
+		// document.getElementById("logic2_not_dvt").src = "./images/yes.png";
+		fillData("dvt2_status", "yes", " Not Deviated");
+
 		contract_details_pdf[5] = ["Short Term Forecast", ": Customer Not Deviated"];
 	}
 	logic2_f_str = str_table;
@@ -1220,23 +1722,29 @@ function finalLogicTwo(logicTwoData,logicTwoAggData,final_dec){
 	finalDec(final_dec);
 }
 
+
+
 function finalDec(logic2_dec){
 	var final_dec;
 	if(logic1_dec == "Deviated" || logic2_dec=="Deviated"){
 		// document.getElementById("fd_cust_liable").src = "./images/yes.png";
-		document.getElementById("fd_cust_liable").innerHTML = "Customer-L";
+		_("fd_liabla").innerHTML = '<img class="output_image" src="./images/yes.png">' + ' <img class="customerImg" src="./images/customer.png" title="Customer">' + " Customer Liable";
 		final_dec = "Customer Liable";
 		contract_details_pdf[6] = ["Final Decision", ": Customer Liable"];
 	}else{
 		// document.getElementById("fd_te_liable").src = "./images/no.png";
-		document.getElementById("fd_te_liable").innerHTML = "T-L";
-
+		_("fd_liabla").innerHTML = '<img class="output_image" src="./images/no.png">' + ' <img class="teImg" src="./images/te.png" title="TE">' + " TE Liable";
+		
 		final_dec = "TE Liable";
 		contract_details_pdf[6] = ["Final Decision", ": TE Liable"];
 	}
+	
+	
 	swal("Short Term Forecast dtails obtained!");
 	getOrderSummary();
 }
+
+
 
 function getOrderSummary(){
 	flowNum=3;
@@ -1247,7 +1755,7 @@ function getOrderSummary(){
 	newOptions = setOptions(), keyName;
 	for (keyName in newOptions){options[keyName]=newOptions[keyName];}
 	options["Customer Request Ship Calendar Week Number"] = year + week;
-	selectViz("vizContainer4", "Order-Split", options);
+	selectViz("vizContainer5", "Order-Split", options);
 }
 
 function readOrderSummary(jsonData){
@@ -1299,7 +1807,7 @@ function getFinalCallOffForSafetyStock(){
 	},
 	newOptions = setOptions(), keyName;
 	for (keyName in newOptions){options[keyName]=newOptions[keyName];}
-	selectViz("vizContainer5", "SafetyStock-FinalCallOff", options);
+	selectViz("vizContainer6", "SafetyStock-FinalCallOff", options);
 }
 
 function readFinalCallOffForSafetyStock(jsonData){
@@ -1353,7 +1861,7 @@ function getDemandForSafetyStock(){
 	},
 	newOptions = setOptions(), keyName;
 	for (keyName in newOptions){options[keyName]=newOptions[keyName];}
-	selectViz("vizContainer6", "SafetyStock-Demand", options);
+	selectViz("vizContainer7", "SafetyStock-Demand", options);
 }
 
 function concoctYearWeek(s_year, s_week){
@@ -1635,10 +2143,11 @@ function resetVariables(){
 	document.getElementById("contract_type").innerHTML = "Contract Type";
 	order_no=""; order_item_no=""; year=""; week=""; sold_to=""; sold_to_name=""; ship_to=""; ship_to_name="";
 	material_no=""; sales_org=""; long_term_flex=""; short_term_flex=""; safety_stock=""; stated_lead_time=""; part_type=""; ww_number=""; ww_name="";
-	s_ship_week=""; s_dock_week="";	ltf_demand_qty=""; ltf_final_calloff=""; ltf_r_final_calloff=""; ltf_shipped_qty=""; logic1_dec=""; mts_mto=""; rlt_week="";
+	s_ship_week=""; s_dock_week="";	ltf_demand_qty=""; ltf_final_calloff=""; ltf_r_final_calloff=""; ltf_shipped_qty=""; ltf_shipper_qty="";ltf_ship_week=""; ltf_dock_week="";
+	logic1_dec=""; mts_mto=""; rlt_week="";
 	p1_ll_week=""; p1_ul_week=""; p2_ll_week=""; p2_ul_week=""; p1_lower_per=""; p1_upper_per=""; p2_lower_per=""; p2_upper_per=""; ddp_no="";
 	logic1_f_str=""; logic2_f_str=""; safety_stock_f_str=""; order_no_str=""; ship_to_str=""; sold_to_str=""; sales_org_str=""; order_summary_str=""; ddp_no_str="";
-	selected_crw_weekdiff=""; ss_final_call_off=[]; ss_rfinal_call_off=[]; ss_shipped_qty=[]; week_type="";
+	selected_crw_weekdiff=""; ss_final_call_off=[]; ss_rfinal_call_off=[]; ss_shipped_qty=[]; week_type=""; mts_mto_order_data="";
 	order_no_disp=""; order_item_no_disp=""; sales_org_disp=""; ship_to_disp=""; ship_to_name_disp=""; sold_to_disp=""; sold_to_name_disp=""; ddp_no_disp="";
 	combo_details_pdf=[]; contract_details_pdf=[]; ltf_data_pdf=[]; stf_data_pdf=[]; order_summary_data_pdf=[]; safety_stock_data_pdf=[]; oth_pdf=[];
 	flowNum=0;
@@ -1653,9 +2162,7 @@ function buttonClick(buttonContent){
 		validate_fields();
 		$("#onload").modal('toggle');
 	}
-	else if(buttonContent=="Reset"){
-		resetContent();
-	}
+	else if(buttonContent=="Reset"){resetContent();}
 }
 
 function generatePDF(){
@@ -1698,5 +2205,5 @@ function generatePDF(){
 	doc.text("Final CallOff/Order Summary", 14, 20);
 	doc.autoTable({head: [order_summary_data_pdf[0]], body: order_summary_data_pdf[1],  startY: 25, styles: {fontSize: 5}});
 
-	doc.save('lt.pdf')
+	doc.save('lt.pdf');
 }
