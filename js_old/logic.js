@@ -2176,7 +2176,7 @@ function resetVariables(){
 	clearOutput("image");
 	ele_handle =  document.getElementsByClassName("data_button");
 	temp_len = ele_handle.length;
-	for(i=0;i<temp_len;i++){ele_handle[i].className = "data_button"; ele_handle[i].onclick = function(){};}
+	for(i=0;i<temp_len;i++){ele_handle[i].className = "data_button btn btn-block white-button"; ele_handle[i].onclick = function(){};}
 	document.getElementById("contract_type").innerHTML = "Contract Type";
 	order_no=""; order_item_no=""; year=""; week=""; sold_to=""; sold_to_name=""; ship_to=""; ship_to_name="";
 	material_no=""; sales_org=""; long_term_flex=""; short_term_flex=""; safety_stock=""; stated_lead_time=""; part_type=""; ww_number=""; ww_name="";
