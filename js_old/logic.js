@@ -9,6 +9,14 @@ function fillData(elid, elimg, eltext) {
 	_(elid).innerHTML = '<img class="output_image" src="./Images/'+ elimg +'.png"> ' + eltext;
 }
 
+// Progress bar
+function progressbar_status(value) {
+	_("progress-bar").style.width = value;
+	// _("progress-bar").style.width = "10%"
+}
+
+
+
 // fillData("fd_liabla", "yes", "Customer bla");
 
 function disableInputFields(id,val){
@@ -534,7 +542,9 @@ function setOrderDataVars(jsonData){
 		document.getElementById("mat_num_p").innerHTML = material_no;
 		document.getElementById("wwname_p").innerHTML = ww_name;
 		document.getElementById("ddp_no_p").innerHTML = ddp_no_disp;
-		swal("Order Details Obtained!");
+		// swal("Order Details Obtained!");
+		progressbar_status("20%");
+
 		if(safety_stock == "yes"){
 			// document.getElementById("ss_est").src = "./Images/yes.png";
 			fillData("ss_status", "yes", " Established");
@@ -872,7 +882,8 @@ function finalLogicOne(variance_per,final_dec){
 	ele_handle.onclick = function() {openDataOverlay(logic1_f_str);};
 	//document.getElementById("logic1_variance_per").innerHTML = variance_per;
 	logic1_dec = final_dec;
-	swal("Long Term Forecast details obtained!");
+	// swal("Long Term Forecast details obtained!");
+	progressbar_status("40%");
 	if(mts_mto == "mts"){initMTS();}
 	else if(mts_mto == "mto" || mts_mto == "contract not in place"){initMTO();}			
 }
@@ -1740,7 +1751,8 @@ function finalDec(logic2_dec){
 	}
 	
 	
-	swal("Short Term Forecast dtails obtained!");
+	// swal("Short Term Forecast dtails obtained!");
+	progressbar_status("60%");
 	getOrderSummary();
 }
 
@@ -1775,7 +1787,8 @@ function readOrderSummary(jsonData){
 	ele_handle.className = temp+" glowbutton";
 	ele_handle.onclick = function() {openDataOverlay(order_summary_str);};
 	
-	swal("Order Summary Obtained!");
+	// swal("Order Summary Obtained!");
+	progressbar_status("80%");
 	
 	if(safety_stock=="yes"){getFinalCallOffForSafetyStock();}else{
 		document.getElementById("buttonSubmit").innerHTML = "Reset";
@@ -2088,7 +2101,8 @@ function readDemandForSafetyStock(jsonData){
 	temp = ele_handle.className;
 	ele_handle.className = temp + " glowbutton";
 	ele_handle.onclick = function() {generatePDF();};
-	swal("Safety Stock details obtained!");
+	// swal("Safety Stock details obtained!");
+	progressbar_status("100%");
 }
 
 function init_app(){

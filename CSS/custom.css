@@ -320,3 +320,21 @@ p {
   .output_image {
     height: 20px;
   }
+
+  .modal-title {
+    margin: 0 auto;
+}
+
+.progress {
+  display: flex;
+  height: 5px;
+  overflow: hidden;
+  font-size: .75rem;
+  background-color: #EA8300;
+  border-radius: .25rem;
+  /* z-index: 1030; */
+}
+
+.no-margin > .col {
+  padding: 0px;
+}
