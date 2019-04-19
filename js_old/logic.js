@@ -15,9 +15,33 @@ function progressbar_status(value) {
 	// _("progress-bar").style.width = "10%"
 }
 
+function reset_form() {
+	_("ltf_status").innerHTML = '<div class="spinner"> </div>';
+	_("mts_status").innerHTML = '<div class="spinner"> </div>';
+	_("stf_status").innerHTML = '<div class="spinner"> </div>';
+	_("period_status").innerHTML = '<div class="spinner"> </div>';
+	_("ss_status").innerHTML = '<div class="spinner"> </div>';
+	_("dvt1_status").innerHTML = '<div class="spinner"> </div>';
+	_("dvt2_status").innerHTML = '<div class="spinner"> </div>';
+	_("fd_liabla").innerHTML = '<div class="spinner"> </div>';
 
+	var outputText = document.getElementsByClassName("output_text");
+	// console.log(outputText.length);
 
-// fillData("fd_liabla", "yes", "Customer bla");
+	for(var i=0; i<outputText.length; i++) {
+		outputText[i].innerHTML = "";
+		// console.log(outputText[i]);
+	}
+
+	// Reset Submit button
+	toggleElementAbility("buttonSubmit");
+	document.getElementById("preloader").style.display = "none";
+	document.getElementById("buttonSection").style.display = "block";
+	resetContent();
+	$('#onload').modal('show');
+
+}
+
 
 function disableInputFields(id,val){
 	document.getElementById(id).value = val.trim();
@@ -530,7 +554,6 @@ function setOrderDataVars(jsonData){
 			contract_details_pdf[3] = ["Part Type", ": Make to Order"];
 		}
 		//write data to page
-		// $(".spinCon").removeClass("spinner");
 		document.getElementById("Ord_num_p").innerHTML = order_no_disp;
 		document.getElementById("Ship_to_num_p").innerHTML = ship_to_disp;
 		document.getElementById("Ship_to_name_p").innerHTML = ship_to_name_disp;
