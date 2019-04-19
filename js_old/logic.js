@@ -33,8 +33,14 @@ function reset_form() {
 		// console.log(outputText[i]);
 	}
 
-	// Reset Submit button
-	toggleElementAbility("buttonSubmit");
+	// Reset Submit butto
+	_("buttonSubmit").disabled = true;
+
+	setTimeout(function() {
+		_("buttonSubmit").disabled = false;
+	}, 2);
+	
+	
 	document.getElementById("preloader").style.display = "none";
 	document.getElementById("buttonSection").style.display = "block";
 	resetContent();
