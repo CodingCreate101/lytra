@@ -33,7 +33,7 @@ function reset_form() {
 		// console.log(outputText[i]);
 	}
 
-	// Reset Submit butto
+	// Reset Submit button
 	_("buttonSubmit").disabled = true;
 
 	setTimeout(function() {
